@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Message Display</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      height: 100vh;
+      position: relative;
+      background-color: #000;
+    }
+    @font-face {
+      font-family: 'MyCustomFont';
+      src: url('Fonts/LOKICOLA.TTF') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+    .video-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: -1;
+    }
+    
+    #bg-video, #interactive-video {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      min-width: 100%;
+      min-height: 100%;
+      width: auto;
+      height: auto;
+    }
+    
+    #interactive-video {
+      display: none;
+      z-index: 1;
+    }
+    
+    @media (min-aspect-ratio: 16/9) {
+      #bg-video, #interactive-video {
+        width: 100%;
+        height: auto;
+      }
+    }
+    
+    @media (max-aspect-ratio: 16/9) {
+      #bg-video, #interactive-video {
+        width: auto;
+        height: 100%;
+      }
+    }
+    
+    .to-mask {
+      position: absolute;
+      top: 35%;
+      left: 50.3%;
+      transform: translateX(-50%);
+      width: 350px;
+      height: 70px;
+      overflow: hidden;
+      z-index: 3;
+    }
+    
+    #to-message {
+      position: absolute;
+      width: auto;
+      left: -100%;
+      font-size: 45px;
+      font-family: 'MyCustomFont';
+      color: #ff0000;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+    }
+    
+    .message-mask {
+      position: absolute;
+      top: 60%;
+      left: 50.3%;
+      transform: translate(-50%, -50%);
+      width: 460px;
+      height: 70px;
+      overflow: hidden;
+      z-index: 3;
+    }
+    
+    .from-mask {
+      position: absolute;
+      bottom: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 610px;
+      height: 70px;
+      white-space: nowrap;
+      overflow: hidden;
+      z-index: 3;
+    }
+    
+    #main-message, #from-message {
+      position: absolute;
+      width: auto;
+      left: -100%;
+      color: rgb(255, 0, 0);
+      font-family: 'MyCustomFont';
+      text-align: center;
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+      padding: 10px;
+      z-index: 2;
+    }
+    
+    #main-message {
+      font-size: 50px;
+    }
+    
+    #from-message {
+      font-size: 45px;
+      white-space: nowrap;
+    }
+    /*
+    .qr-code {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      width: 120px;
+      height: 120px;
+      z-index: 1000;
+      background-color: white;
+      padding: 10px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+    }
+    
+    .qr-code img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }*/
+  </style>
+</head>
+<body>
+  <div class="video-background">
+    <video id="bg-video" autoplay muted loop></video>
+    <video id="interactive-video"></video>
+  </div>
+  
+  <!--<div class="qr-code">
+    <img src="Images/QRCode.png" alt="QR Code">
+  </div>     -->
+
+  <div class="to-mask">
+    <div id="to-message"></div>
+  </div>
+  
+  <div class="message-mask">
+    <div id="main-message"></div>
+  </div>
+  
+  <div class="from-mask">
+    <div id="from-message"></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getFirestore, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+  
+    const firebaseConfig = {
+      apiKey: "AIzaSyBhyznivYb9BoUtK8-z8fzeGJImH5vtrbE",
+      authDomain: "cocacolawishing-3935a.firebaseapp.com",
+      projectId: "cocacolawishing-3935a",
+      storageBucket: "cocacolawishing-3935a.firebasestorage.app",
+      messagingSenderId: "1047038008377",
+      appId: "1:1047038008377:web:b1ae03283c9cce5d6781e8"
+    };
+  
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+  
+    // DOM elements
+    const toMessage = document.getElementById('to-message');
+    const mainMessage = document.getElementById('main-message');
+    const fromMessage = document.getElementById('from-message');
+    const bgVideo = document.getElementById('bg-video');
+    const interactiveVideo = document.getElementById('interactive-video');
+    
+    // State management
+    let currentAnimation = null;
+    let isPlayingInteractive = false;
+    let isVideoPlaying = false;
+    let isTextAnimating = false;
+    let messageQueue = [];
+    let isClear = false;
+    let isProcessingQueue = false;
+    let lastMessageId = null;
+    let lastProcessedTimestamp = null;
+    const MAX_QUEUE_SIZE = 50;
+
+    // ======================
+    // IndexedDB Video Caching
+    // ======================
+    
+    async function openDB() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open('VideoCacheDB', 1);
+        
+        request.onupgradeneeded = (event) => {
+          const db = event.target.result;
+          if (!db.objectStoreNames.contains('videos')) {
+            db.createObjectStore('videos');
+          }
+        };
+        
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = (event) => reject(event.target.error);
+      });
+    }
+
+    async function getCachedVideo(url) {
+      try {
+        const db = await openDB();
+        return new Promise((resolve) => {
+          const tx = db.transaction('videos');
+          const store = tx.objectStore('videos');
+          const request = store.get(url);
+          
+          request.onsuccess = () => {
+            if (request.result) {
+              resolve(URL.createObjectURL(request.result));
+            } else {
+              resolve(url); // Fallback to original URL
+            }
+          };
+          
+          request.onerror = () => resolve(url); // Fallback on error
+        });
+      } catch (error) {
+        console.error(`[Cache Error] Failed to retrieve ${url}:`, error);
+        return url; // Fallback to original URL
+      }
+    }
+
+    async function cacheVideo(url) {
+      try {
+        const db = await openDB();
+        
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction('videos', 'readwrite');
+          const store = tx.objectStore('videos');
+          
+          // First check if video exists
+          const checkRequest = store.get(url);
+          
+          checkRequest.onsuccess = () => {
+            if (checkRequest.result) {
+              console.log(`[Cache] Video already cached: ${url}`);
+              resolve();
+              return;
+            }
+            
+            // Only fetch if not cached
+            fetch(url)
+              .then(response => {
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return response.blob();
+              })
+              .then(blob => {
+                // New transaction for the put operation
+                const putTx = db.transaction('videos', 'readwrite');
+                const putStore = putTx.objectStore('videos');
+                const putRequest = putStore.put(blob, url);
+                
+                putRequest.onsuccess = () => {
+                  console.log(`[Cache] Successfully cached: ${url}`);
+                  resolve();
+                };
+                
+                putRequest.onerror = (event) => {
+                  reject(event.target.error);
+                };
+              })
+              .catch(reject);
+          };
+          
+          checkRequest.onerror = (event) => {
+            reject(event.target.error);
+          };
+        });
+      } catch (error) {
+        console.error(`[Cache Error] Failed to cache ${url}:`, error);
+        throw error;
+      }
+    }
+
+    async function initVideoCache() {
+      try {
+        console.log("[Cache] Initializing video cache");
+        
+        // Initialize IndexedDB
+        await openDB();
+        console.log("[Cache] Database opened");
+        
+        // Cache videos (with error handling)
+        try {
+          await cacheVideo('Images/Video 1(Loop)_R01.mp4');
+        } catch (error) {
+          console.error("[Cache] Failed to cache Video 1, using fallback");
+        }
+        
+        try {
+          await cacheVideo('Images/Video 2(Interactive)_R02.mp4');
+        } catch (error) {
+          console.error("[Cache] Failed to cache Video 2, using fallback");
+        }
+        
+        // Set video sources from cache
+        const bgVideoUrl = await getCachedVideo('Images/Video 1(Loop)_R01.mp4');
+        bgVideo.src = bgVideoUrl;
+        bgVideo.play().catch(e => console.log("Background video play prevented:", e));
+        
+        console.log("[Cache] Video cache initialized successfully");
+      } catch (error) {
+        console.error("[Cache Error] Initialization failed:", error);
+        // Fallback to direct URLs
+        bgVideo.src = 'Images/Video 1(Loop)_R01.mp4';
+        bgVideo.play().catch(e => console.log("Fallback video play prevented:", e));
+      }
+    }
+
+    // ======================
+    // Original Functionality
+    // ======================
+    
+    async function playInteractiveVideo() {
+      if (isPlayingInteractive) return;
+      
+      isPlayingInteractive = true;
+      isVideoPlaying = true;
+      
+      // Use cached video if available
+      interactiveVideo.src = await getCachedVideo('Images/Video 2(Interactive)_R02.mp4');
+      
+      bgVideo.style.display = 'none';
+      interactiveVideo.style.display = 'block';
+      interactiveVideo.currentTime = 0;
+      
+      interactiveVideo.play()
+        .then(() => console.log("[Video] Interactive video started from cache"))
+        .catch(e => {
+          console.error("[Video Error] Play failed:", e);
+          switchBackToBackground();
+        });
+
+      interactiveVideo.onended = () => {
+        isVideoPlaying = false;
+        switchBackToBackground();
+        checkReadyForNextMessage();
+      };
+    }
+
+    function switchBackToBackground() {
+      console.log("[Video] Switching back to background");
+      isPlayingInteractive = false;
+      interactiveVideo.style.display = 'none';
+      bgVideo.style.display = 'block';
+    }
+    
+    function displayMessage(message) {
+      console.log(`[Message] Displaying: To=${message.to}, From=${message.from}`);
+      if (currentAnimation) {
+        cancelAnimationFrame(currentAnimation);
+        currentAnimation = null;
+      }
+    
+      toMessage.textContent = `To ${message.to}`;
+      mainMessage.textContent = message.message;
+      fromMessage.textContent = `From ${message.from}`;
+    
+      playInteractiveVideo();
+    
+      setTimeout(() => {
+        animateMessage();
+      }, 2000);
+    }
+    
+    function animateMessage() {
+      console.log("[Animation] Starting message animation");
+      isTextAnimating = true;
+      
+      toMessage.style.left = '-100%';
+      toMessage.style.opacity = '1';
+      toMessage.style.whiteSpace = 'nowrap';
+      mainMessage.style.left = '-100%';
+      mainMessage.style.opacity = '1';
+      mainMessage.style.whiteSpace = 'nowrap';
+      fromMessage.style.left = '-100%';
+      fromMessage.style.opacity = '1';
+      fromMessage.style.whiteSpace = 'nowrap';
+      
+      const duration = 8000;
+      const moveDuration = 2000;
+      const startTime = Date.now();
+      
+      function animate() {
+        const now = Date.now();
+        const elapsed = now - startTime;
+        
+        if (elapsed < moveDuration) {
+          const progress = elapsed / moveDuration;
+          
+          const toMaskWidth = document.querySelector('.to-mask').offsetWidth;
+          const toTextWidth = toMessage.offsetWidth;
+          const toCurrentPos = -toTextWidth + ((toMaskWidth - toTextWidth) / 2 - (-toTextWidth)) * progress;
+          toMessage.style.left = `${toCurrentPos}px`;
+          
+          const mainMaskWidth = document.querySelector('.message-mask').offsetWidth;
+          const mainTextWidth = mainMessage.scrollWidth;
+          const mainCurrentPos = -mainTextWidth + ((mainMaskWidth - mainTextWidth) / 2 - (-mainTextWidth)) * progress;
+          mainMessage.style.left = `${mainCurrentPos}px`;
+          
+          const fromMaskWidth = document.querySelector('.from-mask').offsetWidth;
+          const fromTextWidth = fromMessage.offsetWidth;
+          const fromCurrentPos = -fromTextWidth + ((fromMaskWidth - fromTextWidth) / 2 - (-fromTextWidth)) * progress;
+          fromMessage.style.left = `${fromCurrentPos}px`;
+          
+          currentAnimation = requestAnimationFrame(animate);
+        } else if (elapsed < moveDuration + duration) {
+          currentAnimation = requestAnimationFrame(animate);
+        } else if (elapsed < moveDuration * 2 + duration) {
+          const progress = (elapsed - moveDuration - duration) / moveDuration;
+          
+          const toMaskWidth = document.querySelector('.to-mask').offsetWidth;
+          const toTextWidth = toMessage.offsetWidth;
+          const toCurrentPos = (toMaskWidth - toTextWidth) / 2 + (toMaskWidth - (toMaskWidth - toTextWidth) / 2) * progress;
+          toMessage.style.left = `${toCurrentPos}px`;
+          toMessage.style.opacity = 1 - progress;
+          
+          const mainMaskWidth = document.querySelector('.message-mask').offsetWidth;
+          const mainTextWidth = mainMessage.offsetWidth;
+          const mainCurrentPos = (mainMaskWidth - mainTextWidth) / 2 + (mainMaskWidth - (mainMaskWidth - mainTextWidth) / 2) * progress;
+          mainMessage.style.left = `${mainCurrentPos}px`;
+          mainMessage.style.opacity = 1 - progress;
+          
+          const fromMaskWidth = document.querySelector('.from-mask').offsetWidth;
+          const fromTextWidth = fromMessage.offsetWidth;
+          const fromCurrentPos = (fromMaskWidth - fromTextWidth) / 2 + (fromMaskWidth - (fromMaskWidth - fromTextWidth) / 2) * progress;
+          fromMessage.style.left = `${fromCurrentPos}px`;
+          fromMessage.style.opacity = 1 - progress;
+          
+          currentAnimation = requestAnimationFrame(animate);
+        } else {
+          toMessage.style.opacity = '0';
+          mainMessage.style.opacity = '0';
+          fromMessage.style.opacity = '0';
+          currentAnimation = null;
+          isTextAnimating = false;
+          console.log("[Animation] Message animation complete");
+          checkReadyForNextMessage();
+        }
+      }
+      
+      currentAnimation = requestAnimationFrame(animate);
+    }
+    
+    function checkReadyForNextMessage() {
+      console.log(`[Queue Check] ${messageQueue.length} message(s) remaining`);
+      if (!isVideoPlaying && !isTextAnimating) {
+        setTimeout(() => {
+          processQueue();
+        }, 1000);
+      }
+    }
+    
+    function processQueue() {
+      if (isVideoPlaying || isTextAnimating) {
+        console.log("[Queue] Waiting for current animation/video to finish");
+        return;
+      }
+      
+      if (messageQueue.length === 0) {
+        console.log("[Queue] Empty - no messages to process");
+        isProcessingQueue = false;
+        return;
+      }
+    
+      isProcessingQueue = true;
+      const nextMessage = messageQueue.shift();
+      lastMessageId = nextMessage.id;
+      
+      console.log(`[Queue] Processing message ID: ${nextMessage.id}`);
+      console.log(`[Queue Status] ${messageQueue.length} message(s) remaining`);
+      
+      displayMessage(nextMessage);
+    }
+
+    function clearQueue() {
+      messageQueue = [];
+      lastMessageId = null;
+      console.log("[System] Queue cleared");
+    }
+
+    function isValidTimestamp(ts) {
+      return !isNaN(new Date(ts).getTime());
+    }
+
+    // Initialize everything when DOM loads
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log("[System] Initializing");
+      initVideoCache();
+      isClear = false;
+    });
+
+    // Firebase message listener
+    const messagesQuery = query(
+      collection(db, "messages"),
+      orderBy("timestamp", "desc")
+    );
+    
+    onSnapshot(messagesQuery, (snapshot) => {
+      const messages = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        timestamp: doc.data().timestamp || new Date().toISOString()
+      }));
+
+      console.log(`[Firebase] Received ${messages.length} message(s) from server`);
+
+      if (messages.length > 0) {
+        if (lastProcessedTimestamp === null) {
+          lastProcessedTimestamp = messages[0].timestamp;
+          console.log(`[System] Initialized with timestamp: ${lastProcessedTimestamp}`);
+          return;
+        }
+
+        const newMessages = messages.filter(msg => 
+          isValidTimestamp(msg.timestamp) &&
+          msg.timestamp > lastProcessedTimestamp && 
+          !messageQueue.some(queuedMsg => queuedMsg.id === msg.id) &&
+          msg.id !== lastMessageId
+        );
+
+        if (newMessages.length > 0) {
+          console.log(`[Queue] Adding ${newMessages.length} new message(s)`);
+          
+          messageQueue = [...messageQueue, ...newMessages.sort((a, b) => 
+            new Date(a.timestamp) - new Date(b.timestamp))
+          ];
+          
+          if (messageQueue.length > MAX_QUEUE_SIZE) {
+            messageQueue = messageQueue.slice(messageQueue.length - MAX_QUEUE_SIZE);
+          }
+          
+          lastProcessedTimestamp = newMessages.reduce((latest, msg) => 
+            msg.timestamp > latest ? msg.timestamp : latest, lastProcessedTimestamp);
+          
+          console.log(`[Queue Status] Total in queue: ${messageQueue.length}`);
+          
+          if (!isProcessingQueue) {
+            processQueue();
+          }
+        }
+      }
+    });
+  
+    window.addEventListener('resize', () => {
+      if (currentAnimation) {
+        console.log("[UI] Adjusting layout for resize");
+        const toMaskWidth = document.querySelector('.to-mask').offsetWidth;
+        const toTextWidth = toMessage.offsetWidth;
+        toMessage.style.left = `${(toMaskWidth - toTextWidth) / 2}px`;
+        
+        const mainMaskWidth = document.querySelector('.message-mask').offsetWidth;
+        const mainTextWidth = mainMessage.offsetWidth;
+        mainMessage.style.left = `${(mainMaskWidth - mainTextWidth) / 2}px`;
+        
+        const fromMaskWidth = document.querySelector('.from-mask').offsetWidth;
+        const fromTextWidth = fromMessage.offsetWidth;
+        fromMessage.style.left = `${(fromMaskWidth - fromTextWidth) / 2}px`;
+      }
+    });
+  </script>
+</body>
+</html>
