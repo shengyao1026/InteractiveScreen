@@ -156,33 +156,76 @@
       z-index: 1000;
     }
     .confirmation-content {
-      background-color: #f40008b6;;
-      color: white;
+      background-color: #f40008ba;
       padding: 30px;
       border-radius: 10px;
       max-width: 500px;
       width: 90%;
       text-align: center;
+      color: white;
     }
     .confirmation-content h2 {
-  font-size: 36px; /* Adjust size as needed (e.g., 24px, 28px, 32px) */
-  margin-bottom: 15px; /* Optional: Adds spacing below the heading */
-}
-    .confirmation-message {
-      text-align: center;
-      margin: 20px 0;
-      padding: 15px;
-      background-color: rgba(255, 255, 255, 0); /* Slightly transparent white */
-      border-radius: 5px;
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: -50px;
     }
-    .confirmation-message p {
-      margin: 10px 0;
-    }
+      .message-container {
+        display: flex;
+        align-items: center;
+        padding-left: 80px;   /* Add left padding */
+        gap: 10px; /* Space between image and details */
+        margin: 0px 0;
+      }
+      .image-message-wrapper {
+        position: relative;
+        width: 150px;
+        height: 350px;
+        display: flex;
+        justify-content: center;
+      }
+
+      .message-image {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .rotated-message {
+        position: absolute;
+        writing-mode: vertical-rl; /* Vertical text */
+        transform: rotate(180deg); /* Rotates text upside down */
+        
+        /* Positioning controls: */
+        top: 50%; /* Move up/down */
+        left: 40%; /* Move left/right */
+        transform: translate(-50%, -50%) rotate(180deg); /* Fine-tune centering */
+        
+        /* Appearance: */
+        font-size: 16px; /* Text size */
+        margin-left: 10px; /* Horizontal offset from center */
+        margin-top: 5px; /* Vertical offset from center */
+        font-weight: bold;
+      }
+
+      .message-details {
+        flex: 1;
+        text-align: left;
+        background-color: rgba(255, 255, 255, 0);
+        padding: 20px;
+        border-radius: 5px;
+        min-width: 200px;
+      }
+
+      .message-details p {
+        margin: 15px 0;
+        font-size: 20px;
+        font-weight: bold;  
+      }
     .confirmation-buttons {
       display: flex;
       justify-content: center;
       gap: 15px;
-      margin-top: 20px;
+      margin-top: -20px;
     }
     .confirmation-button {
       padding: 10px 20px;
@@ -192,12 +235,12 @@
       border: none;
     }
     .confirm-button {
-  background-color: rgb(255, 24, 24);
-  color: #ffffff;
+      background-color: #F40009;
+      color: white;
     }
     .edit-button {
-      background-color: #ffffff;
-      color: rgb(255, 16, 16);
+      background-color: white;
+      color: #F40009;
     }
   </style>
 </head>
@@ -220,25 +263,32 @@
     </div>
   </div>
 
-    <!-- Confirmation Modal -->
-    <div id="confirmationModal" class="confirmation-modal" style="display: none;">
-      <div class="confirmation-content">
-        <h2>Congrats! Your Message is Ready!</h2>
-        <div class="confirmation-message">
+  <!-- Confirmation Modal -->
+  <div id="confirmationModal" class="confirmation-modal" style="display: none;">
+    <div class="confirmation-content">
+      <h2>Congrats! Your Message is Ready!</h2>
+      <div class="message-container">
+        <!-- Left Side: Image with Rotated Message -->
+        <div class="image-message-wrapper">
+          <img src="Images/CokeCan.png" alt="Coca-Cola" class="message-image">
+          <div class="rotated-message" id="confirmRotatedMessage"></div>
+        </div>
+        
+        <!-- Right Side: From/To Details -->
+        <div class="message-details">
           <p><strong>From:</strong> <span id="confirmFrom"></span></p>
           <p><strong>To:</strong> <span id="confirmTo"></span></p>
-          <p><strong>Message:</strong> <span id="confirmMessage"></span></p>
-        </div>
-        <div class="confirmation-buttons">
-          <button id="confirmSendButton" class="confirmation-button confirm-button">Confirm & Send</button>
-          <button id="editButton" class="confirmation-button edit-button">Do It Again</button>
         </div>
       </div>
+      <div class="confirmation-buttons">
+        <button id="confirmSendButton" class="confirmation-button confirm-button">Confirm & Send</button>
+        <button id="editButton" class="confirmation-button edit-button">Do It Again</button>
+      </div>
     </div>
+  </div>
 
-  <!-- Main Content (initially blurred) -->
+  <!-- Main Content -->
   <div id="mainContent" class="blur-content">
-    <!-- Video Background -->
     <video autoplay muted loop class="video-background">
       <source src="Images/BackgroundVid.mp4" type="video/mp4">
       Your browser does not support the video tag.
@@ -248,14 +298,14 @@
       <h1>Send a Message</h1>
       <form id="messageForm">
         <label for="from">From:</label>
-          <input type="text" id="from" name="from" required disabled 
-            pattern="^[A-Za-z0-9\s]+$" 
-            title="Only English letters, numbers, and spaces are allowed." />
+        <input type="text" id="from" name="from" required disabled 
+               pattern="^[A-Za-z0-9\s]+$" 
+               title="Only English letters, numbers, and spaces are allowed." />
 
         <label for="to">To:</label>
-          <input type="text" id="to" name="to" required disabled 
-            pattern="^[A-Za-z0-9\s]+$" 
-            title="Only English letters, numbers, and spaces are allowed." />
+        <input type="text" id="to" name="to" required disabled 
+               pattern="^[A-Za-z0-9\s]+$" 
+               title="Only English letters, numbers, and spaces are allowed." />
 
         <label for="message">Message:</label>
         <select id="message" name="message" disabled>
@@ -281,7 +331,6 @@
     </div>
   </div>
 
-  <!-- Combined Firebase Initialization and Message Handling -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
@@ -298,8 +347,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    console.log("✅ Firebase initialized successfully!");
-
     // Consent Modal Logic
     document.addEventListener('DOMContentLoaded', function() {
       const consentModal = document.getElementById('consentModal');
@@ -307,17 +354,14 @@
       const consentButton = document.getElementById('consentButton');
       const mainContent = document.getElementById('mainContent');
       
-      // Enable/disable consent button based on checkbox
       consentCheckbox.addEventListener('change', function() {
         consentButton.disabled = !this.checked;
       });
       
-      // Handle consent acceptance
       consentButton.addEventListener('click', function() {
         consentModal.style.display = 'none';
         mainContent.classList.remove('blur-content');
         
-        // Enable all form elements
         document.getElementById('from').disabled = false;
         document.getElementById('to').disabled = false;
         document.getElementById('message').disabled = false;
@@ -329,44 +373,36 @@
     document.getElementById('messageForm').addEventListener('submit', function(e) {
       e.preventDefault();
       
-      // Get form values
       const from = document.getElementById('from').value;
       const to = document.getElementById('to').value;
       const message = document.getElementById('message').value;
 
-      // Show confirmation modal with the message details
       document.getElementById('confirmFrom').textContent = from;
       document.getElementById('confirmTo').textContent = to;
-      document.getElementById('confirmMessage').textContent = message;
+      document.getElementById('confirmRotatedMessage').textContent = message;
       document.getElementById('confirmationModal').style.display = 'flex';
     });
 
-    // Confirmation Modal Buttons
+    // Confirmation Button Handler
     document.getElementById('confirmSendButton').addEventListener('click', async function() {
-      // Get form values again (in case they were changed)
       const from = document.getElementById('from').value;
       const to = document.getElementById('to').value;
       const message = document.getElementById('message').value;
 
-      // Hide confirmation modal
       document.getElementById('confirmationModal').style.display = 'none';
 
-      // List of restricted words/phrases
       const restrictedInputs = ["pukimak", "butoh", "lancau", "celaka", "sial", "haram jadah", "jahanam", "pundek", "babi", "anjing", "setan", "kurang ajar", "kepala bapak kau", "mampus", "berak", "tahi", "kencing", "gampang", "laknat", "burit", "pepek", "lanjiao", "chibai", "kanina", "kanasai", "sohai", "ham sap", "pukisai", "kpkb", "nabei", "chao", "siao", "gong", "sei", "bodoh", "gila", "bangang", "bahlol", "lembap", "pondan", "pengkid", "bodoh piang", "samdol", "bengap", "sengal", "tak guna", "hidung belang", "buaya darat", "gemuk", "hodoh", "keling", "apu neh neh", "paria", "cina babi", "cinapek", "pendatang", "kafir", "murtad", "yahudi", "sekular", "fuck", "shit", "bitch", "bastard", "asshole", "cunt", "motherfucker", "dickhead", "piss", "cock", "rasuah", "songlap", "penyangak", "pengkhianat", "macai", "walaun", "balaci", "kroni", "kleptokrat", "diktator", "u-turn", "kayangan", "menteri tidor", "kerajaan gagal", "boneka", "najib", "rosmah", "mahathir", "anwar", "zahid", "muhyiddin", "hadi awang", "lim guan eng", "azmin ali", "ismail sabri", "dap", "umno", "pas", "pkr", "bersatu",
         "操", "肏", "我操", "操你妈", "操你媽", "草泥马", "草泥馬", "他妈的", "他媽的", "你妈的", "你媽的", "妈的", "媽的", "靠", "傻逼", "傻屄", "煞笔", "SB", "呆逼", "逼", "屄", "屌", "鸡巴", "雞巴", "龟头", "龜頭", "王八蛋", "混蛋", "笨蛋", "二百五", "白痴", "白癡", "神经病", "神經病", "变态", "變態", "贱人", "賤人", "骚货", "騷貨", "婊子", "婊", "绿茶婊", "綠茶婊", "圣母婊", "聖母婊", "渣男", "小三", "人渣", "垃圾", "废物", "廢物", "畜生", "狗娘养的", "狗娘養的", "狗日的", "杂种", "雜種", "去死", "滚", "滾", "屌你老母", "仆街", "仆你个街", "仆你個街", "冚家剷", "冚家鏟", "閪", "撚", "柒", "on9", "戇鳩", "痴线", "痴線", "屌你", "收皮", "顶你个肺", "頂你個肺", "NMSL", "你妈死了", "你媽死了", "WSND", "我是你爹", "CNM", "TMD", "去你妈的", "去你媽的", "操你祖宗十八代", "不要脸", "不要臉", "下流", "色狼", "三八", "智障", "脑残", "腦殘", "脑子有病", "腦子有病", "吃屎", "放屁", "共匪", "五毛", "小粉红", "小粉紅", "美分", "公知", "台蛙", "废青", "廢青", "港灿", "港燦", "支那"
       ]
       
-      // Check if input contains any restricted words
       let hasError = false;
       const allInputs = from + " " + to + " " + message;
       
-      // Remove any existing error message
       const existingError = document.querySelector('.error-message');
       if (existingError) {
         existingError.remove();
       }
       
-      // Check against restricted words
       restrictedInputs.forEach(word => {
         if (allInputs.toLowerCase().includes(word.toLowerCase())) {
           hasError = true;
@@ -374,21 +410,18 @@
       });
       
       if (hasError) {
-        // Show error message
         const errorElement = document.createElement('div');
         errorElement.className = 'error-message';
         errorElement.textContent = 'Error: Input contains restricted content';
         document.getElementById('messageForm').appendChild(errorElement);
-        return; // Stop form submission
+        return;
       }
 
-      // Show the sent message details in the output
       const outputMessage = document.getElementById('outputMessage');
       const messageDetails = document.getElementById('messageDetails');
       messageDetails.textContent = `From: ${from}\nTo: ${to}\nMessage: ${message}`;
       outputMessage.style.display = 'block';
 
-      // Send message to Firestore
       try {
         const docRef = await addDoc(collection(db, "messages"), {
           from: from,
@@ -403,13 +436,10 @@
         console.error("Error adding document: ", e);
       }
 
-      // Optionally, clear the form
       document.getElementById('messageForm').reset();
     });
 
-    // "Do It Again" button handler
     document.getElementById('editButton').addEventListener('click', function() {
-      // Just hide the confirmation modal
       document.getElementById('confirmationModal').style.display = 'none';
     });
   </script>
