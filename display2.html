@@ -5,126 +5,132 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Message Display</title>
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      width: 4000px;
-      height: 1000px;
-      position: relative;
-      background-color: #000;
-    }
-    @font-face {
-      font-family: 'MyCustomFont';
-      src: url('Fonts/LOKICOLA.TTF') format('truetype');
-      font-weight: normal;
-      font-style: normal;
-    }
-    .display-container {
-      width: 1000px;
-      height: 1000px;
-      float: left;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .video-background {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      z-index: -1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    
-    .bg-video, .interactive-video {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      min-width: 100%;
-      min-height: 100%;
-      width: auto;
-      height: auto;
-      object-fit: cover;
-    }
-    
-    .interactive-video {
-      display: none;
-      z-index: 1;
-    }
-    
-    .to-mask {
-      position: absolute;
-      top: 35%;
-      left: 50.3%;
-      transform: translateX(-50%);
-      width: 445px;
-      height: 70px;
-      overflow: hidden;
-      z-index: 3;
-    }
-    
-    .to-message {
-      position: absolute;
-      width: auto;
-      left: -100%;
-      font-size: 40px;
-      font-family: "MyCustomFont";
-      color: #ff0000;
-      white-space: nowrap;
-      opacity: 0;
-      transition: opacity 0.5s ease-in-out;
-    }
-    
-    .message-mask {
-      position: absolute;
-      top: 60%;
-      left: 50.3%;
-      transform: translate(-50%, -50%);
-      width: 585px;
-      height: 70px;
-      overflow: hidden;
-      z-index: 3;
-    }
-    
-    .from-mask {
-      position: absolute;
-      bottom: 10%;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 775px;
-      height: 70px;
-      white-space: nowrap;
-      overflow: hidden;
-      z-index: 3;
-    }
-    
-    .main-message, .from-message {
-      position: absolute;
-      width: auto;
-      left: -100%;
-      color: rgb(255, 0, 0);
-      font-family: "MyCustomFont";
-      text-align: center;
-      opacity: 0;
-      transition: opacity 0.5s ease-in-out;
-      padding: 10px;
-      z-index: 2;
-    }
-    
-    .main-message {
-      font-size: 50px;
-    }
-    
-    .from-message {
-      font-size: 40px;
-      white-space: nowrap;
-    }
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  width: 100%; /* Changed from 100vw */
+  height: 100%; /* Changed from 100vh */
+  position: relative;
+  background-color: #000;
+}
+
+html {
+  height: 100%; /* Required for body percentage height to work */
+}
+
+@font-face {
+  font-family: 'MyCustomFont';
+  src: url('Fonts/LOKICOLA.TTF') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.display-container {
+  width: 25%; /* Changed from 25vw - now relative to body width */
+  height: 100%; /* Full height of body */
+  float: left;
+  position: relative;
+  overflow: hidden;
+}
+
+.video-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: -1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.bg-video, .interactive-video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: cover;
+}
+
+.interactive-video {
+  display: none;
+  z-index: 1;
+}
+
+.to-mask {
+  position: absolute;
+  top: 35%;
+  left: 50.3%;
+  transform: translateX(-50%);
+  width: 44.5%; /* 445px/1000px = 44.5% (relative to display-container) */
+  height: 7%; /* 70px/1000px = 7% */
+  overflow: hidden;
+  z-index: 3;
+}
+
+.to-message {
+  position: absolute;
+  width: auto;
+  left: -100%;
+  font-size: 4%; /* Relative to parent height */
+  font-family: "MyCustomFont";
+  color: #ff0000;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.message-mask {
+  position: absolute;
+  top: 60%;
+  left: 50.3%;
+  transform: translate(-50%, -50%);
+  width: 58.5%; /* 585px/1000px */
+  height: 7%; /* 70px/1000px */
+  overflow: hidden;
+  z-index: 3;
+}
+
+.from-mask {
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 77.5%; /* 775px/1000px */
+  height: 7%; /* 70px/1000px */
+  white-space: nowrap;
+  overflow: hidden;
+  z-index: 3;
+}
+
+.main-message, .from-message {
+  position: absolute;
+  width: auto;
+  left: -100%;
+  color: rgb(255, 0, 0);
+  font-family: "MyCustomFont";
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+  padding: 1%; /* Relative to parent */
+  z-index: 2;
+}
+
+.main-message {
+  font-size: 5%; /* Relative to parent height */
+}
+
+.from-message {
+  font-size: 4%; /* Relative to parent height */
+  white-space: nowrap;
+}
     
     /*.qr-code {
       position: absolute;
