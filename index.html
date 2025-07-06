@@ -1,446 +1,637 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Message Sender</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Coca-Cola Message Sender</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    /* Base Reset */
+    * { 
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box; 
+    }
+    
     body {
       font-family: Arial, sans-serif;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      position: relative;
+      background: #000;
+    }
+    
+    /* Portrait Layout Container */
+    .portrait-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      max-width: 100%;
+      max-height: 100%;
+      overflow: hidden;
+      background: #000;
+      aspect-ratio: 9/16;
+      margin: 0 auto;
+    }
+    
+    /* Font Faces */
+    @font-face {
+      font-family: 'Coke';
+      src: url('Fonts/Coke-Regular.otf') format('opentype');
+    }
+    @font-face {
+      font-family: 'CokeOutline';
+      src: url('Fonts/Coke-Outline.otf') format('opentype');
+    }
+
+    @font-face {
+      font-family: 'TCCCUnity';
+      src: url('Fonts/TCCCUnity-Bold.ttf') format('truetype');
+      font-weight: bold;
+    }
+    
+    /* Home Screen */
+    #homeScreen {
+      position: absolute;
+      width: 100%;
+      height: 100%;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      position: relative;
-      overflow: hidden;
     }
-    .video-background {
-      position: fixed;
-      top: 0;
-      left: 0;
+    
+    .home-video {
+      position: absolute;
       width: 100%;
       height: 100%;
       object-fit: cover;
-      z-index: -1;
+      z-index: 1;
     }
-    .container {
-      background-color: rgba(255, 255, 255, 0.8);
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    
+    .start-button {
+      background-color: #F40009;
+      color: white;
+      border: none;
+      padding: 2.5% 5%;
+      border-radius: 5vw;
+      font-size: 3vw;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 2;
+      box-shadow: 0 0.5vw 1vw rgba(0,0,0,0.3);
+      transition: all 0.3s;
+      text-transform: uppercase;
+      min-width: 40%;
+      text-align: center;
+      line-height: 1.2; /* Add this for better line spacing */
+      white-space: normal; /* Add this to allow text wrapping */
+    }
+    
+    .start-button:hover {
+      background-color: #D10007;
+      transform: scale(1.05);
+    }
+    
+    /* Main Content */
+    #mainContent {
+      position: absolute;
       width: 100%;
-      max-width: 400px;
-      margin-top: 50px;
+      height: 100%;
+      display: none;
     }
+    
+    .video-background {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 1;
+    }
+    
+    .container {
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -40%);
+      background-color: transparent;
+      padding: 4%;
+      border-radius: 2vw;
+      width: 80%;
+      max-width: 800px;
+      z-index: 2;
+      text-align: center;
+    }
+
+    .bottom-image-container {
+      position: absolute;
+      bottom: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80%;
+      max-width: 800px;
+      text-align: center;
+      z-index: 2;
+    }
+
+    .bottom-image {
+      max-width: 100%;
+      height: auto;
+      max-height: 40vh;
+      display: block;
+      margin: 0 auto;
+    }
+    
+    .title-container {
+      position: relative;
+      width: 100%;
+      margin-bottom: 4%;
+    }
+    
     h1 {
       text-align: center;
-      margin-bottom: 20px;
+      text-transform: uppercase;
+      font-size: 5vw;
+      letter-spacing: 0.2vw;
+      margin: 0;
     }
-    label {
-      font-size: 16px;
-      margin: 10px 0 5px;
-      display: block;
+    
+    .main-text {
+      font-family: 'Coke', Arial, sans-serif;
+      color: #000000;
+      position: relative;
     }
-    input, select {
+    
+    .outline-text {
+      font-size: 5vw;
+      font-family: 'CokeOutline', Arial, sans-serif;
+      color: white;
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
-      padding: 10px;
-      margin: 5px 0;
-      border: 1px solid #ccc;
-      border-radius: 4px;
+      z-index: -1;
     }
+    
+    input {
+      width: 100%;
+      padding: 2%;
+      font-size: 3vw;
+      border: 0.2vw solid #ddd;
+      border-radius: 1vw;
+      margin: 1% 0;
+    }
+    
     #sendButton {
-      width: 100px;
-      height: 100px;
-      padding: 0;
-      background-image: url('Images/Coca_Cola Button.png');
+      width: 15vw;
+      height: 15vw;
+      min-width: 100px;
+      min-height: 100px;
+      margin: 1% auto 0;
+      background-image: url('Images/Next_Button.png');
       background-size: contain;
       background-position: center;
       background-repeat: no-repeat;
-      background-color: transparent;
       border: none;
       cursor: pointer;
       display: block;
-      margin: 0 auto;
-      outline: none;
+      background-color: transparent;
     }
-    #sendButton:hover {
-      opacity: 0.8;
-    }
-    #outputMessage {
-      margin-top: 20px;
-      padding: 10px;
-      background-color: #e7f7e7;
-      border-radius: 4px;
-    }
-    .top-overlay {
+    
+    /* Modal Styles */
+    .modal {
       position: fixed;
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: -1;
-      width: 300px;
-      height: auto;
-      pointer-events: none;
-    }
-    .error-message {
-      color: red;
-      margin-top: 10px;
-      text-align: center;
-      font-weight: bold;
-    }
-    /* Consent Modal Styles */
-    .consent-modal {
-      position: fixed;
-      top: 0;
-      left: 0;
       width: 100%;
       height: 100%;
-      background-color: rgba(0, 0, 0, 0.8);
+      top: 0;
+      left: 0;
+      background-color: rgba(0,0,0,0.9);
       display: flex;
       justify-content: center;
-      align-items: flex-start;
+      align-items: center;
       z-index: 1000;
-      overflow-y: auto;
-      padding: 20px 0;
+      padding: 4%;
     }
-    .consent-content {
+    
+    .modal-content {
       background-color: white;
-      padding: 30px;
-      border-radius: 10px;
-      max-width: 500px;
+      padding: 5%;
+      border-radius: 2vw;
+      max-width: 80%;
       width: 90%;
-      text-align: center;
-      margin: 20px 0;
-      max-height: 80vh;
+      max-height: 90vh;
       overflow-y: auto;
     }
-    .consent-checkbox {
-      margin: 20px 0;
+    
+    /* Confirmation Specific Styles */
+    .confirmation-content {
+      text-align: center;
+      background-color: #f40008;
+      color: white;
+      text-align: center;
+      font-family: 'TCCCUnity', Arial, sans-serif;
+    }
+
+    /* Center the can container */
+    .centered-can-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 3% 0;
+      width: 100%;
+    }
+
+    .can-with-message {
+      position: relative;
+      display: inline-block;
+    }
+
+    .confirmation-content h2 {
+      font-size: 4vw;
+      margin-bottom: 2%;
+      letter-spacing: 0.1vw;
+    }
+    
+    .message-container {
       display: flex;
       align-items: center;
       justify-content: center;
+      margin: 4% 0;
     }
-    .consent-checkbox input {
-      width: auto;
-      margin-right: 10px;
+    
+    .message-image {
+      width: 20vw;
+      height: 40vw;
+      max-width: 200px;
+      max-height: 400px;
+      object-fit: contain;
+      position: relative;
     }
-    .consent-button {
-      background-color: #F40009;
+
+    .rotated-to-message {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-90deg);
       color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
+      font-family: 'TCCCUnity', Arial, sans-serif;
+      font-size: 4vw;
+      font-weight: bold;
+      white-space: nowrap;
+      text-shadow: 
+        0.1vw 0.1vw 0.3vw rgba(0,0,0,0.8),
+        -0.1vw -0.1vw 0.3vw rgba(0,0,0,0.5);
+      z-index: 2;
+      pointer-events: none;
+      width: max-content;
     }
-    .consent-button:disabled {
-      background-color: #cccccc;
-      cursor: not-allowed;
-    }
-    .blur-content {
-      filter: blur(5px);
+    
+    /* Rotated Text Styles */
+    .rotated-regular-message {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-90deg);
+      font-family: 'Coke', Arial, sans-serif;
+      color: rgb(255, 4, 4);
+      font-size: 5.5vw;
+      font-weight: bold;
+      white-space: nowrap;
+      z-index: 3;
       pointer-events: none;
     }
-    /* Confirmation Modal Styles */
-    .confirmation-modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.8);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-    .confirmation-content {
-      background-color: #f40008ba;
-      padding: 30px;
-      border-radius: 10px;
-      max-width: 500px;
-      width: 90%;
-      text-align: center;
-      color: white;
-    }
-    .confirmation-content h2 {
-      font-size: 28px;
+
+    .rotated-outline-message {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-90deg);
+      font-family: 'CokeOutline', Arial, sans-serif;
+      color: rgb(255, 255, 255);
+      font-size: 5.7vw;
       font-weight: bold;
-      margin-bottom: -50px;
+      white-space: nowrap;
+      z-index: 2;
+      pointer-events: none;
     }
-      .message-container {
-        display: flex;
-        align-items: center;
-        padding-left: 80px;   /* Add left padding */
-        gap: 10px; /* Space between image and details */
-        margin: 0px 0;
-      }
-      .image-message-wrapper {
-        position: relative;
-        width: 150px;
-        height: 350px;
-        display: flex;
-        justify-content: center;
-      }
-
-      .message-image {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-      }
-
-      .rotated-message {
-        position: absolute;
-        writing-mode: vertical-rl; /* Vertical text */
-        transform: rotate(180deg); /* Rotates text upside down */
-        
-        /* Positioning controls: */
-        top: 50%; /* Move up/down */
-        left: 40%; /* Move left/right */
-        transform: translate(-50%, -50%) rotate(180deg); /* Fine-tune centering */
-        
-        /* Appearance: */
-        font-size: 16px; /* Text size */
-        margin-left: 10px; /* Horizontal offset from center */
-        margin-top: 5px; /* Vertical offset from center */
-        font-weight: bold;
-      }
-
-      .message-details {
-        flex: 1;
-        text-align: left;
-        background-color: rgba(255, 255, 255, 0);
-        padding: 20px;
-        border-radius: 5px;
-        min-width: 200px;
-      }
-
-      .message-details p {
-        margin: 15px 0;
-        font-size: 20px;
-        font-weight: bold;  
-      }
+    
+    .message-details {
+        display: none;
+    }
+    
+    .message-details p {
+      font-size: 2.8vw;
+      margin: 2% 0;
+    }
+    
     .confirmation-buttons {
       display: flex;
       justify-content: center;
-      gap: 15px;
-      margin-top: -20px;
+      gap: 2%;
+      margin-top: 4%;
+      flex-wrap: wrap;
     }
+    
     .confirmation-button {
-      padding: 10px 20px;
-      border-radius: 5px;
+      font-family: 'Coke', Arial, sans-serif;
+      padding: 1.5% 3%;
+      border-radius: 1vw;
+      font-size: 3.6vw;
       cursor: pointer;
-      font-size: 16px;
       border: none;
+      min-width: 40%;
+      margin: 1%;
     }
+    
     .confirm-button {
-      background-color: #F40009;
-      color: white;
-    }
-    .edit-button {
       background-color: white;
       color: #F40009;
+    }
+    
+    .edit-button {
+      background-color: transparent;
+      color: white;
+      border: 0.2vw solid white;
+    }
+    
+    /* Consent Modal Specifics */
+    .consent-checkbox {
+      margin: 3% 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .consent-checkbox input {
+      width: 3vw;
+      height: 3vw;
+      min-width: 20px;
+      min-height: 20px;
+      margin-right: 1.5%;
+    }
+    
+    .consent-checkbox label {
+      font-size: 2vw;
+      display: inline;
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 8vw;
+      }
+      
+      .main-text, .outline-text {
+        font-size: 8vw !important;
+      }
+      
+      .container {
+        width: 90%;
+        padding: 2%;
+        top: 35%;
+        transform: translate(-50%, -35%);
+      }
+      
+      .start-button {
+        font-size: 5vw;
+        padding: 3% 6%;
+      }
+      
+      input {
+        font-size: 4vw;
+        padding: 2%;
+      }
+      
+      #sendButton {
+        width: 20vw;
+        height: 20vw;
+      }
+      
+      .rotated-regular-message {
+        font-size: 6vw !important;
+      }
+      
+      .rotated-outline-message {
+        font-size: 6.2vw !important;
+      }
+      
+      .confirmation-content h2 {
+        font-size: 6vw;
+      }
+      
+      .confirmation-button {
+        font-size: 5vw;
+        padding: 2% 4%;
+      }
+      
+      .consent-checkbox label {
+        font-size: 3vw;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .container {
+        top: 30%;
+        transform: translate(-50%, -30%);
+      }
+      
+      input {
+        font-size: 5vw;
+      }
+      
+      .confirmation-buttons {
+        flex-direction: column;
+      }
+      
+      .confirmation-button {
+        width: 80%;
+        margin: 2% auto;
+      }
+      
+      .consent-checkbox label {
+        font-size: 4vw;
+      }
     }
   </style>
 </head>
 <body>
-  <!-- Consent Modal -->
-  <div id="consentModal" class="consent-modal">
-    <div class="consent-content">
-      <h2>PDPA Consent Notice Malaysia</h2>
-      <p style="text-align: justify; text-justify: inter-word;">By proceeding, you consent to Coca-Cola Malaysia collecting and processing your personal data, including your name and interaction actively, solely for the purposes of enabling participation in this interactive experience, marketing anlysis, and service improvement. Coca-Cola Malaysia will manage your data in accordance with the Personal Data Protection Act 2010 and Coca-Cola Malaysia's Privacy Policy.</p>
-      <br>
-      <h2>User Policy Agreement</h2>
-      <p style="text-align: justify; text-justify: inter-word;">This interactive experience is conducted in a public setting. By continuing, you agree, to behave responsibly and respectfully. Users must refrain from any actions or content that may be considered inappropriate, offensive, misleading, or harmful in nature. Coca-Cola reserves the right to remove access or take necessary action against any conduct that breaches the integrity or purpose of this experience. Users are fully accountable for their input and participation.</p>
+  <div class="portrait-container">
+    <!-- Home Screen -->
+    <div id="homeScreen">
+      <video autoplay muted loop class="home-video">
+        <source src="Images/USER INTERFACE R01.1.mp4" type="video/mp4">
+      </video>
+      <button id="startButton" class="start-button">START CUSTOMISING<br>YOUR CAN</button>
+    </div>
+
+    <!-- Main Content -->
+    <div id="mainContent">
+      <video autoplay muted loop class="video-background">
+        <source src="Images/User Interface EMPTY R01.2.mp4" type="video/mp4">
+      </video>
       
-      <div class="consent-checkbox">
-        <input type="checkbox" id="consentCheckbox">
-        <label for="consentCheckbox">By proceeding, I have read and agree to the PDPDA and User Policy Agreement</label>
+    <!-- Form Container -->
+    <div class="container">
+      <div class="title-container">
+        <h1 class="outline-text">Type a name</h1>
+        <h1 class="main-text">Type a name</h1>
       </div>
-      
-      <button id="consentButton" class="consent-button" disabled>OK</button>
+      <form id="messageForm">
+        <input type="text" id="to" name="to" required 
+              maxlength="10" 
+              pattern="^[A-Za-z0-9\s]+$" 
+              title="Only English letters, numbers, and spaces (max 12 characters)"
+              placeholder="Maximum 10 character">
+        <button type="submit" id="sendButton"></button>
+      </form>
+    </div>
+
+    <!-- Image Container -->
+    <div class="bottom-image-container">
+      <img src="Images/CokeCan.png" alt="Coca-Cola Can" class="bottom-image">
     </div>
   </div>
 
-  <!-- Confirmation Modal -->
-  <div id="confirmationModal" class="confirmation-modal" style="display: none;">
-    <div class="confirmation-content">
-      <h2>Congrats! Your Message is Ready!</h2>
-      <div class="message-container">
-        <!-- Left Side: Image with Rotated Message -->
-        <div class="image-message-wrapper">
-          <img src="Images/CokeCan.png" alt="Coca-Cola" class="message-image">
-          <div class="rotated-message" id="confirmRotatedMessage"></div>
+    <!-- Consent Modal -->
+    <div id="consentModal" class="modal" style="display: none;">
+      <div class="modal-content">
+        <h2 style="font-size: 4vw; margin-bottom: 2%;">PDPA Consent Notice Malaysia</h2>
+        <div style="max-height: 60vh; overflow-y: auto; padding-right: 2%;">
+          <p style="text-align: justify; margin: 2% 0; font-size: 2.4vw; line-height: 1.5;">
+            By proceeding, you consent to Coca-Cola Malaysia collecting and processing your personal data, 
+            including your name and interaction actively, solely for the purposes of enabling participation 
+            in this interactive experience, marketing analysis, and service improvement. Coca-Cola Malaysia 
+            will manage your data in accordance with the Personal Data Protection Act 2010 and Coca-Cola 
+            Malaysia's Privacy Policy.
+          </p>
+          
+          <h2 style="font-size: 4vw; margin: 4% 0 2%;">User Policy Agreement</h2>
+          <p style="text-align: justify; margin: 2% 0; font-size: 2.4vw; line-height: 1.5;">
+            This interactive experience is conducted in a public setting. By continuing, you agree to behave 
+            responsibly and respectfully. Users must refrain from any actions or content that may be considered 
+            inappropriate, offensive, misleading, or harmful in nature. Coca-Cola reserves the right to remove 
+            access or take necessary action against any conduct that breaches the integrity or purpose of this 
+            experience. Users are fully accountable for their input and participation.
+          </p>
         </div>
         
-        <!-- Right Side: From/To Details -->
-        <div class="message-details">
-          <p><strong>From:</strong> <span id="confirmFrom"></span></p>
-          <p><strong>To:</strong> <span id="confirmTo"></span></p>
+        <div class="consent-checkbox">
+          <input type="checkbox" id="consentCheckbox">
+          <label for="consentCheckbox">
+            By proceeding, I have read and agree to the PDPA and User Policy Agreement
+          </label>
+        </div>
+        
+        <button id="consentButton" style="background-color: #F40009; color: white; border: none; padding: 1.5% 3%; 
+              border-radius: 1vw; font-size: 2.4vw; cursor: pointer; margin-top: 2%;" disabled>
+          OK
+        </button>
+      </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmationModal" class="modal" style="display: none;">
+      <div class="modal-content confirmation-content">
+        <h2>Congrats! Your Coca-Cola is Ready!</h2>
+        
+        <div class="centered-can-container">
+          <div class="can-with-message">
+            <img src="Images/CokeCan.png" alt="Coca-Cola Can" class="message-image">
+            <!-- Outline Text Behind -->
+            <div class="rotated-outline-message" id="confirmRotatedOutline"></div>
+            <!-- Regular Text Front -->
+            <div class="rotated-regular-message" id="confirmRotatedMessage"></div>
+          </div>
+        </div>
+        
+        <div class="confirmation-buttons">
+          <button id="confirmSendButton" class="confirmation-button confirm-button">Confirm & Send</button>
+          <button id="editButton" class="confirmation-button edit-button">Edit</button>
         </div>
       </div>
-      <div class="confirmation-buttons">
-        <button id="confirmSendButton" class="confirmation-button confirm-button">Confirm & Send</button>
-        <button id="editButton" class="confirmation-button edit-button">Do It Again</button>
-      </div>
     </div>
-  </div>
-
-  <!-- Main Content -->
-  <div id="mainContent" class="blur-content">
-    <video autoplay muted loop class="video-background">
-      <source src="Images/BackgroundVid.mp4" type="video/mp4">
-      Your browser does not support the video tag.
-    </video>
-    <img src="Images/Coca-Cola_logo.png" alt="Top Banner" class="top-overlay" />
-    <div class="container">
-      <h1>Send a Message</h1>
-      <form id="messageForm">
-        <label for="from">From:</label>
-        <input type="text" id="from" name="from" required disabled 
-               pattern="^[A-Za-z0-9\s]+$" 
-               title="Only English letters, numbers, and spaces are allowed." />
-
-        <label for="to">To:</label>
-        <input type="text" id="to" name="to" required disabled 
-               pattern="^[A-Za-z0-9\s]+$" 
-               title="Only English letters, numbers, and spaces are allowed." />
-
-        <label for="message">Message:</label>
-        <select id="message" name="message" disabled>
-          <option value="Stay cool, stay classic">Stay cool, stay classic</option>
-          <option value="Cheers to happy moments">Cheers to happy moments</option>
-          <option value="Sip, smile, repeat">Sip, smile, repeat</option>
-          <option value="Open joy, every day">Open joy, every day</option>
-          <option value="Bubbles of happiness to you">Bubbles of happiness to you</option>
-          <option value="Wishing you Coke and cheer">Wishing you Coke and cheer</option>
-          <option value="Feel the fizz of joy">Feel the fizz of joy</option>
-          <option value="Refreshing vibes only">Refreshing vibes only</option>
-          <option value="Sparkle on, stay sweet">Sparkle on, stay sweet</option>
-          <option value="A toast to you, with Coke">A toast to you, with Coke</option>
-        </select>
-
-        <button type="submit" id="sendButton" disabled></button>
-      </form>
-
-      <div id="outputMessage" style="display: none;">
-        <h3>Message Sent:</h3>
-        <p id="messageDetails"></p>
-      </div>
-    </div>
-  </div>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-
+    // Firebase configuration and initialization
     const firebaseConfig = {
       apiKey: "AIzaSyBhyznivYb9BoUtK8-z8fzeGJImH5vtrbE",
       authDomain: "cocacolawishing-3935a.firebaseapp.com",
       projectId: "cocacolawishing-3935a",
-      storageBucket: "cocacolawishing-3935a.firebasestorage.app",
+      storageBucket: "cocacolawishing-3935a.appspot.com",
       messagingSenderId: "1047038008377",
       appId: "1:1047038008377:web:b1ae03283c9cce5d6781e8"
     };
 
+    // Initialize Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+    
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Consent Modal Logic
-    document.addEventListener('DOMContentLoaded', function() {
-      const consentModal = document.getElementById('consentModal');
-      const consentCheckbox = document.getElementById('consentCheckbox');
-      const consentButton = document.getElementById('consentButton');
-      const mainContent = document.getElementById('mainContent');
-      
-      consentCheckbox.addEventListener('change', function() {
-        consentButton.disabled = !this.checked;
-      });
-      
-      consentButton.addEventListener('click', function() {
-        consentModal.style.display = 'none';
-        mainContent.classList.remove('blur-content');
-        
-        document.getElementById('from').disabled = false;
-        document.getElementById('to').disabled = false;
-        document.getElementById('message').disabled = false;
-        document.getElementById('sendButton').disabled = false;
-      });
+    // DOM Elements
+    const startButton = document.getElementById('startButton');
+    const homeScreen = document.getElementById('homeScreen');
+    const mainContent = document.getElementById('mainContent');
+    const messageForm = document.getElementById('messageForm');
+    const consentModal = document.getElementById('consentModal');
+    const consentCheckbox = document.getElementById('consentCheckbox');
+    const consentButton = document.getElementById('consentButton');
+    const confirmationModal = document.getElementById('confirmationModal');
+    const confirmSendButton = document.getElementById('confirmSendButton');
+    const editButton = document.getElementById('editButton');
+
+    // Start Button Click - Show Consent Modal
+    startButton.addEventListener('click', () => {
+      homeScreen.style.display = 'none';
+      consentModal.style.display = 'flex';
     });
 
-    // Message Form Submission
-    document.getElementById('messageForm').addEventListener('submit', function(e) {
+    // Consent Checkbox Change
+    consentCheckbox.addEventListener('change', () => {
+      consentButton.disabled = !consentCheckbox.checked;
+    });
+
+    // Consent Button Click - Show Main Content
+    consentButton.addEventListener('click', () => {
+      consentModal.style.display = 'none';
+      mainContent.style.display = 'block';
+    });
+
+    // Form Submission - Show Confirmation Modal
+    messageForm.addEventListener('submit', (e) => {
       e.preventDefault();
       
-      const from = document.getElementById('from').value;
       const to = document.getElementById('to').value;
-      const message = document.getElementById('message').value;
 
-      document.getElementById('confirmFrom').textContent = from;
-      document.getElementById('confirmTo').textContent = to;
-      document.getElementById('confirmRotatedMessage').textContent = message;
-      document.getElementById('confirmationModal').style.display = 'flex';
+      document.getElementById('confirmRotatedMessage').textContent = to;
+      document.getElementById('confirmRotatedOutline').textContent = to;
+      
+      confirmationModal.style.display = 'flex';
     });
 
-    // Confirmation Button Handler
-    document.getElementById('confirmSendButton').addEventListener('click', async function() {
-      const from = document.getElementById('from').value;
+    // Confirm Send Button - Send to Firebase
+    confirmSendButton.addEventListener('click', async () => {
       const to = document.getElementById('to').value;
-      const message = document.getElementById('message').value;
-
-      document.getElementById('confirmationModal').style.display = 'none';
-
-      const restrictedInputs = ["pukimak", "butoh", "lancau", "celaka", "sial", "haram jadah", "jahanam", "pundek", "babi", "anjing", "setan", "kurang ajar", "kepala bapak kau", "mampus", "berak", "tahi", "kencing", "gampang", "laknat", "burit", "pepek", "lanjiao", "chibai", "kanina", "kanasai", "sohai", "ham sap", "pukisai", "kpkb", "nabei", "chao", "siao", "gong", "sei", "bodoh", "gila", "bangang", "bahlol", "lembap", "pondan", "pengkid", "bodoh piang", "samdol", "bengap", "sengal", "tak guna", "hidung belang", "buaya darat", "gemuk", "hodoh", "keling", "apu neh neh", "paria", "cina babi", "cinapek", "pendatang", "kafir", "murtad", "yahudi", "sekular", "fuck", "shit", "bitch", "bastard", "asshole", "cunt", "motherfucker", "dickhead", "piss", "cock", "rasuah", "songlap", "penyangak", "pengkhianat", "macai", "walaun", "balaci", "kroni", "kleptokrat", "diktator", "u-turn", "kayangan", "menteri tidor", "kerajaan gagal", "boneka", "najib", "rosmah", "mahathir", "anwar", "zahid", "muhyiddin", "hadi awang", "lim guan eng", "azmin ali", "ismail sabri", "dap", "umno", "pas", "pkr", "bersatu",
-        "操", "肏", "我操", "操你妈", "操你媽", "草泥马", "草泥馬", "他妈的", "他媽的", "你妈的", "你媽的", "妈的", "媽的", "靠", "傻逼", "傻屄", "煞笔", "SB", "呆逼", "逼", "屄", "屌", "鸡巴", "雞巴", "龟头", "龜頭", "王八蛋", "混蛋", "笨蛋", "二百五", "白痴", "白癡", "神经病", "神經病", "变态", "變態", "贱人", "賤人", "骚货", "騷貨", "婊子", "婊", "绿茶婊", "綠茶婊", "圣母婊", "聖母婊", "渣男", "小三", "人渣", "垃圾", "废物", "廢物", "畜生", "狗娘养的", "狗娘養的", "狗日的", "杂种", "雜種", "去死", "滚", "滾", "屌你老母", "仆街", "仆你个街", "仆你個街", "冚家剷", "冚家鏟", "閪", "撚", "柒", "on9", "戇鳩", "痴线", "痴線", "屌你", "收皮", "顶你个肺", "頂你個肺", "NMSL", "你妈死了", "你媽死了", "WSND", "我是你爹", "CNM", "TMD", "去你妈的", "去你媽的", "操你祖宗十八代", "不要脸", "不要臉", "下流", "色狼", "三八", "智障", "脑残", "腦殘", "脑子有病", "腦子有病", "吃屎", "放屁", "共匪", "五毛", "小粉红", "小粉紅", "美分", "公知", "台蛙", "废青", "廢青", "港灿", "港燦", "支那"
-      ]
-      
-      let hasError = false;
-      const allInputs = from + " " + to + " " + message;
-      
-      const existingError = document.querySelector('.error-message');
-      if (existingError) {
-        existingError.remove();
-      }
-      
-      restrictedInputs.forEach(word => {
-        if (allInputs.toLowerCase().includes(word.toLowerCase())) {
-          hasError = true;
-        }
-      });
-      
-      if (hasError) {
-        const errorElement = document.createElement('div');
-        errorElement.className = 'error-message';
-        errorElement.textContent = 'Error: Input contains restricted content';
-        document.getElementById('messageForm').appendChild(errorElement);
-        return;
-      }
-
-      const outputMessage = document.getElementById('outputMessage');
-      const messageDetails = document.getElementById('messageDetails');
-      messageDetails.textContent = `From: ${from}\nTo: ${to}\nMessage: ${message}`;
-      outputMessage.style.display = 'block';
 
       try {
-        const docRef = await addDoc(collection(db, "messages"), {
-          from: from,
+        await addDoc(collection(db, "messages"), {
           to: to,
-          message: message,
           timestamp: new Date().toISOString()
         });
-
-        console.log("Document written with ID: ", docRef.id);
         
-      } catch (e) {
-        console.error("Error adding document: ", e);
+        confirmationModal.style.display = 'none';
+        alert('Message sent successfully!');
+        messageForm.reset();
+      } catch (error) {
+        console.error("Error sending message: ", error);
+        alert('Error sending message. Please try again.');
       }
-
-      document.getElementById('messageForm').reset();
     });
 
-    document.getElementById('editButton').addEventListener('click', function() {
-      document.getElementById('confirmationModal').style.display = 'none';
+    // Edit Button - Return to Form
+    editButton.addEventListener('click', () => {
+      confirmationModal.style.display = 'none';
     });
   </script>
 </body>

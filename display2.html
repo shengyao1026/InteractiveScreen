@@ -5,247 +5,166 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Message Display</title>
   <style>
-body {
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  width: 100%; /* Changed from 100vw */
-  height: 100%; /* Changed from 100vh */
-  position: relative;
-  background-color: #000;
-}
-
-html {
-  height: 100%; /* Required for body percentage height to work */
-}
-
-@font-face {
-  font-family: 'MyCustomFont';
-  src: url('Fonts/LOKICOLA.TTF') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
-
-.display-container {
-  width: 25%; /* Changed from 25vw - now relative to body width */
-  height: 100%; /* Full height of body */
-  float: left;
-  position: relative;
-  overflow: hidden;
-}
-
-.video-background {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  z-index: -1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.bg-video, .interactive-video {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  min-width: 100%;
-  min-height: 100%;
-  width: auto;
-  height: auto;
-  object-fit: cover;
-}
-
-.interactive-video {
-  display: none;
-  z-index: 1;
-}
-
-.to-mask {
-  position: absolute;
-  top: 35%;
-  left: 50.3%;
-  transform: translateX(-50%);
-  width: 44.5%; /* 445px/1000px = 44.5% (relative to display-container) */
-  height: 7%; /* 70px/1000px = 7% */
-  overflow: hidden;
-  z-index: 3;
-}
-
-.to-message {
-  position: absolute;
-  width: auto;
-  left: -100%;
-  font-size: 4%; /* Relative to parent height */
-  font-family: "MyCustomFont";
-  color: #ff0000;
-  white-space: nowrap;
-  opacity: 0;
-  transition: opacity 0.5s ease-in-out;
-}
-
-.message-mask {
-  position: absolute;
-  top: 60%;
-  left: 50.3%;
-  transform: translate(-50%, -50%);
-  width: 58.5%; /* 585px/1000px */
-  height: 7%; /* 70px/1000px */
-  overflow: hidden;
-  z-index: 3;
-}
-
-.from-mask {
-  position: absolute;
-  bottom: 10%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 77.5%; /* 775px/1000px */
-  height: 7%; /* 70px/1000px */
-  white-space: nowrap;
-  overflow: hidden;
-  z-index: 3;
-}
-
-.main-message, .from-message {
-  position: absolute;
-  width: auto;
-  left: -100%;
-  color: rgb(255, 0, 0);
-  font-family: "MyCustomFont";
-  text-align: center;
-  opacity: 0;
-  transition: opacity 0.5s ease-in-out;
-  padding: 1%; /* Relative to parent */
-  z-index: 2;
-}
-
-.main-message {
-  font-size: 5%; /* Relative to parent height */
-}
-
-.from-message {
-  font-size: 4%; /* Relative to parent height */
-  white-space: nowrap;
-}
-    
-    /*.qr-code {
-      position: absolute;
-      bottom: 20px;
-      left: 20px;
-      width: 120px;
-      height: 120px;
-      z-index: 1000;
-      background-color: white;
-      padding: 10px;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
-    }
-    
-    .qr-code img {
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
       width: 100%;
       height: 100%;
-      object-fit: contain;
-    }*/
+      position: relative;
+      background-color: #000;
+    }
+
+    html {
+      height: 100%;
+    }
+
+    @font-face {
+      font-family: 'Coke';
+      src: url('Fonts/Coke-Regular.otf') format('opentype');
+    }
+    
+    @font-face {
+      font-family: 'CokeOutline';
+      src: url('Fonts/Coke-Outline.otf') format('opentype');
+    }
+
+    .display-container {
+      width: 25%;
+      height: 100%;
+      float: left;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .video-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: -1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .bg-video, .interactive-video {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      min-width: 100%;
+      min-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: cover;
+    }
+
+    .interactive-video {
+      display: none;
+      z-index: 1;
+    }
+
+    .to-mask {
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      text-align: center;
+      z-index: 3;
+      overflow: visible;
+    }
+
+    .to-message {
+      position: relative;
+      display: inline-block;
+      font-size: 2.5vw;
+      font-family: "Coke";
+      color: #ff0000;
+      white-space: nowrap;
+      opacity: 0;
+      transform: scale(0) rotate(-60deg);
+      transform-origin: center;
+      transition: 
+        opacity 0.3s ease-out,
+        transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 3;
+    }
+    
+    .to-message-outline {
+      position: absolute;
+      top: 5%;
+      left: 0;
+      width: 100%;
+      font-size: 2.25vw;
+      font-family: "CokeOutline";
+      color: #ffffff;
+      white-space: nowrap;
+      opacity: 0;
+      transform: scale(0) rotate(-60deg);
+      transform-origin: center;
+      transition: 
+        opacity 0.3s ease-out,
+        transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 2;
+      pointer-events: none;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
   <!-- First Display -->
   <div class="display-container" id="display1">
     <div class="video-background">
-      <video class="bg-video" autoplay muted loop></video>
-      <video class="interactive-video"></video>
+      <video class="bg-video" autoplay muted loop src="Images/KV Share cola cuba R01.2.mp4"></video>
+      <video class="interactive-video" muted></video>
     </div>
-
-    <!--<div class="qr-code">
-      <img src="Images/QRCode.png" alt="QR Code">
-    </div>-->
 
     <div class="to-mask">
+      <div class="to-message-outline"></div>
       <div class="to-message"></div>
-    </div>
-    
-    <div class="message-mask">
-      <div class="main-message"></div>
-    </div>
-    
-    <div class="from-mask">
-      <div class="from-message"></div>
     </div>
   </div>
 
   <!-- Second Display -->
   <div class="display-container" id="display2">
     <div class="video-background">
-      <video class="bg-video" autoplay muted loop></video>
+      <video class="bg-video" autoplay muted loop src="Images/KV Share cola cuba R01.2.mp4"></video>
       <video class="interactive-video" muted></video>
     </div>
 
-    <!--<div class="qr-code">
-      <img src="Images/QRCode.png" alt="QR Code">
-    </div>-->
-
     <div class="to-mask">
+      <div class="to-message-outline"></div>
       <div class="to-message"></div>
-    </div>
-    
-    <div class="message-mask">
-      <div class="main-message"></div>
-    </div>
-    
-    <div class="from-mask">
-      <div class="from-message"></div>
     </div>
   </div>
 
   <!-- Third Display -->
   <div class="display-container" id="display3">
     <div class="video-background">
-      <video class="bg-video" autoplay muted loop></video>
+      <video class="bg-video" autoplay muted loop src="Images/KV Share cola cuba R01.2.mp4"></video>
       <video class="interactive-video" muted></video>
     </div>
 
-    <!--<div class="qr-code">
-      <img src="Images/QRCode.png" alt="QR Code">
-    </div>-->
-
     <div class="to-mask">
+      <div class="to-message-outline"></div>
       <div class="to-message"></div>
-    </div>
-    
-    <div class="message-mask">
-      <div class="main-message"></div>
-    </div>
-    
-    <div class="from-mask">
-      <div class="from-message"></div>
     </div>
   </div>
 
   <!-- Fourth Display -->
   <div class="display-container" id="display4">
     <div class="video-background">
-      <video class="bg-video" autoplay muted loop></video>
+      <video class="bg-video" autoplay muted loop src="Images/KV Share cola cuba R01.2.mp4"></video>
       <video class="interactive-video" muted></video>
     </div>
 
-    <!--<div class="qr-code">
-      <img src="Images/QRCode.png" alt="QR Code">
-    </div>-->
-
     <div class="to-mask">
+      <div class="to-message-outline"></div>
       <div class="to-message"></div>
-    </div>
-    
-    <div class="message-mask">
-      <div class="main-message"></div>
-    </div>
-    
-    <div class="from-mask">
-      <div class="from-message"></div>
     </div>
   </div>
 
@@ -269,161 +188,53 @@ html {
     const displays = Array.from(document.querySelectorAll('.display-container'));
     
     // State management
-    let currentAnimations = Array(4).fill(null);
+    let currentTimeouts = Array(4).fill(null);
     let isPlayingInteractive = Array(4).fill(false);
     let isVideoPlaying = Array(4).fill(false);
-    let isTextAnimating = Array(4).fill(false);
     let messageQueue = [];
-    let isClear = false;
     let isProcessingQueue = false;
     let lastMessageId = null;
     let lastProcessedTimestamp = null;
     const MAX_QUEUE_SIZE = 50;
-
-    // ======================
-    // IndexedDB Video Caching
-    // ======================
     
-    async function openDB() {
-      return new Promise((resolve, reject) => {
-        const request = indexedDB.open('VideoCacheDB', 1);
-        
-        request.onupgradeneeded = (event) => {
-          const db = event.target.result;
-          if (!db.objectStoreNames.contains('videos')) {
-            db.createObjectStore('videos');
-          }
-        };
-        
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = (event) => reject(event.target.error);
-      });
-    }
+    // Inactivity timer variables
+    let inactivityTimer = null;
+    const INACTIVITY_TIMEOUT = 300000; // 300 seconds of inactivity before replay
+    let lastDisplayedMessage = null;
 
-    async function getCachedVideo(url) {
-      try {
-        const db = await openDB();
-        return new Promise((resolve) => {
-          const tx = db.transaction('videos');
-          const store = tx.objectStore('videos');
-          const request = store.get(url);
-          
-          request.onsuccess = () => {
-            if (request.result) {
-              resolve(URL.createObjectURL(request.result));
-            } else {
-              resolve(url);
-            }
-          };
-          
-          request.onerror = () => resolve(url);
-        });
-      } catch (error) {
-        console.error(`[Cache Error] Failed to retrieve ${url}:`, error);
-        return url;
+    function resetInactivityTimer() {
+      // Clear existing timer
+      if (inactivityTimer) {
+        clearTimeout(inactivityTimer);
       }
+      
+      // Set new timer
+      inactivityTimer = setTimeout(() => {
+        replayLastMessage();
+      }, INACTIVITY_TIMEOUT);
     }
 
-    async function cacheVideo(url) {
-      try {
-        const db = await openDB();
-        
-        return new Promise((resolve, reject) => {
-          const tx = db.transaction('videos', 'readwrite');
-          const store = tx.objectStore('videos');
-          
-          const checkRequest = store.get(url);
-          
-          checkRequest.onsuccess = () => {
-            if (checkRequest.result) {
-              console.log(`[Cache] Video already cached: ${url}`);
-              resolve();
-              return;
-            }
-            
-            fetch(url)
-              .then(response => {
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                return response.blob();
-              })
-              .then(blob => {
-                const putTx = db.transaction('videos', 'readwrite');
-                const putStore = putTx.objectStore('videos');
-                const putRequest = putStore.put(blob, url);
-                
-                putRequest.onsuccess = () => {
-                  console.log(`[Cache] Successfully cached: ${url}`);
-                  resolve();
-                };
-                
-                putRequest.onerror = (event) => {
-                  reject(event.target.error);
-                };
-              })
-              .catch(reject);
-          };
-          
-          checkRequest.onerror = (event) => {
-            reject(event.target.error);
-          };
-        });
-      } catch (error) {
-        console.error(`[Cache Error] Failed to cache ${url}:`, error);
-        throw error;
-      }
-    }
-
-    async function initVideoCache() {
-      try {
-        console.log("[Cache] Initializing video cache");
-        
-        await openDB();
-        console.log("[Cache] Database opened");
-        
-        try {
-          await cacheVideo('Images/Video 1(Loop)_R01.mp4');
-        } catch (error) {
-          console.error("[Cache] Failed to cache Video 1, using fallback");
+    function replayLastMessage() {
+      if (lastDisplayedMessage && !isVideoPlaying.some(Boolean)) {
+        console.log(`[Inactivity] Replaying last message after ${INACTIVITY_TIMEOUT/1000} seconds`);
+        for (let i = 0; i < 4; i++) {
+          displayMessage(lastDisplayedMessage, i);
         }
-        
-        try {
-          await cacheVideo('Images/Video 2(Interactive)_R02.mp4');
-        } catch (error) {
-          console.error("[Cache] Failed to cache Video 2, using fallback");
-        }
-        
-        const bgVideoUrl = await getCachedVideo('Images/Video 1(Loop)_R01.mp4');
-        displays.forEach(display => {
-          const bgVideo = display.querySelector('.bg-video');
-          bgVideo.src = bgVideoUrl;
-          bgVideo.play().catch(e => console.log("Background video play prevented:", e));
-        });
-        
-        console.log("[Cache] Video cache initialized successfully");
-      } catch (error) {
-        console.error("[Cache Error] Initialization failed:", error);
-        displays.forEach(display => {
-          const bgVideo = display.querySelector('.bg-video');
-          bgVideo.src = 'Images/Video 1(Loop)_R01.mp4';
-          bgVideo.play().catch(e => console.log("Fallback video play prevented:", e));
-        });
       }
     }
 
-    // ======================
-    // Display Functionality
-    // ======================
-    
     async function playInteractiveVideo(index) {
       if (isPlayingInteractive[index]) return;
       
       isPlayingInteractive[index] = true;
       isVideoPlaying[index] = true;
+      resetInactivityTimer(); // Reset timer when video starts
+      
       const display = displays[index];
       const bgVideo = display.querySelector('.bg-video');
       const interactiveVideo = display.querySelector('.interactive-video');
       
-      interactiveVideo.src = await getCachedVideo('Images/Video 2(Interactive)_R02.mp4');
+      interactiveVideo.src = 'Images/KV BUS STOP R01.1.mp4';
       
       bgVideo.style.display = 'none';
       interactiveVideo.style.display = 'block';
@@ -433,13 +244,11 @@ html {
       
       if (playPromise !== undefined) {
         playPromise.then(() => {
-          console.log(`[Display ${index+1}] Interactive video with sound started`);
+          console.log(`[Display ${index+1}] Interactive video started`);
         })
         .catch(error => {
-          console.log(`[Display ${index+1}] Autoplay with sound was prevented, falling back to muted`);
-          interactiveVideo.muted = true;
+          console.log(`[Display ${index+1}] Autoplay was prevented`);
           interactiveVideo.play()
-            .then(() => console.log(`[Display ${index+1}] Interactive video started (muted)`))
             .catch(e => {
               console.error(`[Display ${index+1}] Video Error - Play failed:`, e);
               switchBackToBackground(index);
@@ -466,110 +275,59 @@ html {
     }
   
     function displayMessage(message, index) {
-      console.log(`[Display ${index+1}] Displaying: To=${message.to}, From=${message.from}`);
-      if (currentAnimations[index]) {
-        cancelAnimationFrame(currentAnimations[index]);
-        currentAnimations[index] = null;
+      console.log(`[Display ${index+1}] Displaying: ${message.to}`);
+      
+      // Clear any pending timeouts
+      if (currentTimeouts[index]) {
+        clearTimeout(currentTimeouts[index]);
+        currentTimeouts[index] = null;
       }
 
       const display = displays[index];
       const toMessage = display.querySelector('.to-message');
-      const mainMessage = display.querySelector('.main-message');
-      const fromMessage = display.querySelector('.from-message');
+      const toMessageOutline = display.querySelector('.to-message-outline');
       
-      toMessage.textContent = `To ${message.to}`;
-      mainMessage.textContent = message.message;
-      fromMessage.textContent = `From ${message.from}`;
+      toMessage.textContent = message.to;
+      toMessageOutline.textContent = message.to;
   
       playInteractiveVideo(index);
   
-      setTimeout(() => {
+      // Start the animation after a delay
+      currentTimeouts[index] = setTimeout(() => {
         animateMessage(index);
-      }, 2000);
+      }, 1500);
     }
   
     function animateMessage(index) {
-      console.log(`[Display ${index+1}] Starting message animation`);
-      isTextAnimating[index] = true;
+      console.log(`[Display ${index+1}] Starting pop-up animation`);
       
       const display = displays[index];
       const toMessage = display.querySelector('.to-message');
-      const mainMessage = display.querySelector('.main-message');
-      const fromMessage = display.querySelector('.from-message');
+      const toMessageOutline = display.querySelector('.to-message-outline');
       
-      toMessage.style.left = '-100%';
-      toMessage.style.opacity = '1';
-      toMessage.style.whiteSpace = 'nowrap';
-      mainMessage.style.left = '-100%';
-      mainMessage.style.opacity = '1';
-      mainMessage.style.whiteSpace = 'nowrap';
-      fromMessage.style.left = '-100%';
-      fromMessage.style.opacity = '1';
-      fromMessage.style.whiteSpace = 'nowrap';
+      // Reset state before animation
+      toMessage.style.opacity = '0';
+      toMessage.style.transform = 'scale(0) rotate(-30deg)';
+      toMessageOutline.style.opacity = '0';
+      toMessageOutline.style.transform = 'scale(0) rotate(-30deg)';
       
-      const duration = 8000;
-      const moveDuration = 2000;
-      const startTime = Date.now();
-      
-      function animate() {
-        const now = Date.now();
-        const elapsed = now - startTime;
+      // Trigger the pop-up animation
+      setTimeout(() => {
+        toMessage.style.opacity = '1';
+        toMessage.style.transform = 'scale(1) rotate(-20deg)';
+        toMessageOutline.style.opacity = '1';
+        toMessageOutline.style.transform = 'scale(1.15) rotate(-20deg)';
         
-        if (elapsed < moveDuration) {
-          const progress = elapsed / moveDuration;
-          
-          const toMaskWidth = display.querySelector('.to-mask').offsetWidth;
-          const toTextWidth = toMessage.offsetWidth;
-          const toCurrentPos = -toTextWidth + ((toMaskWidth - toTextWidth) / 2 - (-toTextWidth)) * progress;
-          toMessage.style.left = `${toCurrentPos}px`;
-          
-          const mainMaskWidth = display.querySelector('.message-mask').offsetWidth;
-          const mainTextWidth = mainMessage.scrollWidth;
-          const mainCurrentPos = -mainTextWidth + ((mainMaskWidth - mainTextWidth) / 2 - (-mainTextWidth)) * progress;
-          mainMessage.style.left = `${mainCurrentPos}px`;
-          
-          const fromMaskWidth = display.querySelector('.from-mask').offsetWidth;
-          const fromTextWidth = fromMessage.offsetWidth;
-          const fromCurrentPos = -fromTextWidth + ((fromMaskWidth - fromTextWidth) / 2 - (-fromTextWidth)) * progress;
-          fromMessage.style.left = `${fromCurrentPos}px`;
-          
-          currentAnimations[index] = requestAnimationFrame(animate);
-        } else if (elapsed < moveDuration + duration) {
-          currentAnimations[index] = requestAnimationFrame(animate);
-        } else if (elapsed < moveDuration * 2 + duration) {
-          const progress = (elapsed - moveDuration - duration) / moveDuration;
-          
-          const toMaskWidth = display.querySelector('.to-mask').offsetWidth;
-          const toTextWidth = toMessage.offsetWidth;
-          const toCurrentPos = (toMaskWidth - toTextWidth) / 2 + (toMaskWidth - (toMaskWidth - toTextWidth) / 2) * progress;
-          toMessage.style.left = `${toCurrentPos}px`;
-          toMessage.style.opacity = 1 - progress;
-          
-          const mainMaskWidth = display.querySelector('.message-mask').offsetWidth;
-          const mainTextWidth = mainMessage.offsetWidth;
-          const mainCurrentPos = (mainMaskWidth - mainTextWidth) / 2 + (mainMaskWidth - (mainMaskWidth - mainTextWidth) / 2) * progress;
-          mainMessage.style.left = `${mainCurrentPos}px`;
-          mainMessage.style.opacity = 1 - progress;
-          
-          const fromMaskWidth = display.querySelector('.from-mask').offsetWidth;
-          const fromTextWidth = fromMessage.offsetWidth;
-          const fromCurrentPos = (fromMaskWidth - fromTextWidth) / 2 + (fromMaskWidth - (fromMaskWidth - fromTextWidth) / 2) * progress;
-          fromMessage.style.left = `${fromCurrentPos}px`;
-          fromMessage.style.opacity = 1 - progress;
-          
-          currentAnimations[index] = requestAnimationFrame(animate);
-        } else {
+        // Set timeout to fade out after display duration
+        currentTimeouts[index] = setTimeout(() => {
           toMessage.style.opacity = '0';
-          mainMessage.style.opacity = '0';
-          fromMessage.style.opacity = '0';
-          currentAnimations[index] = null;
-          isTextAnimating[index] = false;
+          toMessage.style.transform = 'scale(0) rotate(30deg)';
+          toMessageOutline.style.opacity = '0';
+          toMessageOutline.style.transform = 'scale(0) rotate(30deg)';
           console.log(`[Display ${index+1}] Message animation complete`);
           checkReadyForNextMessage();
-        }
-      }
-      
-      currentAnimations[index] = requestAnimationFrame(animate);
+        }, 6000);
+      }, 10);
     }
     
     function checkReadyForNextMessage() {
@@ -582,20 +340,22 @@ html {
     }
     
     function processQueue() {
-      if (isVideoPlaying.some(Boolean) || isTextAnimating.some(Boolean)) {
-        console.log("[Queue] Waiting for current animation/video to finish");
+      if (isVideoPlaying.some(Boolean)) {
+        console.log("[Queue] Waiting for current video to finish");
         return;
       }
       
       if (messageQueue.length === 0) {
         console.log("[Queue] Empty - no messages to process");
         isProcessingQueue = false;
+        resetInactivityTimer(); // Start inactivity timer when queue is empty
         return;
       }
 
       isProcessingQueue = true;
       const nextMessage = messageQueue.shift();
       lastMessageId = nextMessage.id;
+      lastDisplayedMessage = nextMessage; // Store the last displayed message
       
       console.log(`[Queue] Processing message ID: ${nextMessage.id}`);
       console.log(`[Queue Status] ${messageQueue.length} message(s) remaining`);
@@ -603,12 +363,8 @@ html {
       for (let i = 0; i < 4; i++) {
         displayMessage(nextMessage, i);
       }
-    }
-
-    function clearQueue() {
-      messageQueue = [];
-      lastMessageId = null;
-      console.log("[System] Queue cleared");
+      
+      resetInactivityTimer(); // Reset timer when processing a new message
     }
 
     function isValidTimestamp(ts) {
@@ -667,34 +423,20 @@ html {
     });
   
     window.addEventListener('resize', () => {
-      currentAnimations.forEach((anim, index) => {
-        if (anim) {
-          console.log(`[UI] Adjusting layout for display ${index+1}`);
-          const display = displays[index];
-          const toMessage = display.querySelector('.to-message');
-          const mainMessage = display.querySelector('.main-message');
-          const fromMessage = display.querySelector('.from-message');
-          
-          const toMaskWidth = display.querySelector('.to-mask').offsetWidth;
-          const toTextWidth = toMessage.offsetWidth;
-          toMessage.style.left = `${(toMaskWidth - toTextWidth) / 2}px`;
-          
-          const mainMaskWidth = display.querySelector('.message-mask').offsetWidth;
-          const mainTextWidth = mainMessage.offsetWidth;
-          mainMessage.style.left = `${(mainMaskWidth - mainTextWidth) / 2}px`;
-          
-          const fromMaskWidth = display.querySelector('.from-mask').offsetWidth;
-          const fromTextWidth = fromMessage.offsetWidth;
-          fromMessage.style.left = `${(fromMaskWidth - fromTextWidth) / 2}px`;
-        }
-      });
+      // Handle any necessary resize adjustments
     });
 
     // Initialize everything when DOM loads
     document.addEventListener('DOMContentLoaded', () => {
       console.log("[System] Initializing");
-      initVideoCache();
-      isClear = false;
+      
+      // Start playing background videos
+      displays.forEach(display => {
+        const bgVideo = display.querySelector('.bg-video');
+        bgVideo.play().catch(e => console.log("Background video play prevented:", e));
+      });
+      
+      resetInactivityTimer(); // Start the inactivity timer
     });
   </script>
 </body>
