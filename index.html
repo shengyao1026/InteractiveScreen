@@ -452,13 +452,25 @@
         font-size: 4vw;
       }
     }
+	
+    /* Safari video fix patch */
+    .home-video,
+    .video-background {
+      object-fit: cover;
+      width: 100% !important;
+      height: 100% !important;
+      top: 0;
+      left: 0;
+      position: absolute;
+    }
+
   </style>
 </head>
 <body>
   <div class="portrait-container">
     <!-- Home Screen -->
     <div id="homeScreen">
-      <video autoplay muted loop class="home-video">
+      <video autoplay muted loop playsinline width="100%" height="100%" class="home-video">
         <source src="Images/USER INTERFACE R01.1.mp4" type="video/mp4">
       </video>
       <button id="startButton" class="start-button">START CUSTOMISING<br>YOUR CAN</button>
@@ -466,7 +478,7 @@
 
     <!-- Main Content -->
     <div id="mainContent">
-      <video autoplay muted loop class="video-background">
+      <video autoplay muted loop playsinline width="100%" height="100%" class="video-background">
         <source src="Images/User Interface EMPTY R01.2.mp4" type="video/mp4">
       </video>
       
