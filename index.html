@@ -551,7 +551,31 @@
       </div>
     </div>
 
+    <!-- Error Modal -->
+    <div id="errorModal" class="modal" style="display: none;">
+      <div class="modal-content confirmation-content">
+        <h2>Inappropriate Content</h2>
+        <p style="font-size: 3vw; margin: 5% 0;">Your message contains language that doesn't align with our community guidelines. Please revise your message.</p>
+        <button id="errorOkButton" class="confirmation-button confirm-button" style="margin-top: 5%;">OK</button>
+      </div>
+    </div>
+
   <script type="module">
+    // Restricted words list
+    const restrictedWords =
+      ["pukimak", "butoh", "lancau", "celaka", "sial", "haram jadah", "jahanam", "pundek", "babi", "anjing", "setan", "kurang ajar", "kepala bapak kau", 
+      "mampus", "berak", "tahi", "kencing", "gampang", "laknat", "burit", "pepek", "lanjiao", "chibai", "kanina", "kanasai", "sohai", "ham sap", "pukisai", 
+      "kpkb", "nabei", "chao", "siao", "gong", "sei", "bodoh", "gila", "bangang", "bahlol", "lembap", "pondan", "pengkid", "bodoh piang", "samdol", "bengap", 
+      "sengal", "tak guna", "hidung belang", "buaya darat", "gemuk", "hodoh", "keling", "apu neh neh", "paria", "cina babi", "cinapek", "pendatang", "kafir", 
+      "murtad", "yahudi", "sekular", "fuck", "shit", "bitch", "bastard", "asshole", "cunt", "motherfucker", "dickhead", "piss", "cock", "rasuah", "songlap", 
+      "penyangak", "pengkhianat", "macai", "walaun", "balaci", "kroni", "kleptokrat", "diktator", "u-turn", "kayangan", "menteri tidor", "kerajaan gagal", 
+      "boneka", "najib", "rosmah", "mahathir", "anwar", "zahid", "muhyiddin", "hadi awang", "lim guan eng", "azmin ali", "ismail sabri", "dap", "umno", "pas", 
+      "pkr", "bersatu", "Meleis", "LGBT", "Rogol", "Cacat", "Dadah", "Genocide", "Pelangi", "Perkosa", "Terencat", "Haram", "Isreal", "Jakun", "Kunyit", "Saitan", 
+      "Siut", "Memperkosa", "Spastik", "Palestine", "Geng Kunyit", "Syaitan", "Konek", "Diperkosa", "Hamas", "Malay", "Homo", "Iblis", "Zakar", "Memperkosakan", 
+      "China", "Kote", "Diperkosakan", "Cina", "Bapuk", "Lancap", "Dirogol", "India", "Sotong", "Kulup", "Merogol", "Melayu", "Sutun", "Puki", "Gay", "Bapok", 
+      "Lembut", "Pepet", "Pantat", "Pungkok", "Buto", "Kuku", "Gugu", "Ass", "Kongkek", "Romen", "Kontol", "Tetek", "Bedebah", "Bontot", "isra hell" , "Israel "
+    ];
+
     // Firebase configuration and initialization
     const firebaseConfig = {
       apiKey: "AIzaSyBhyznivYb9BoUtK8-z8fzeGJImH5vtrbE",
@@ -580,6 +604,8 @@
     const confirmationModal = document.getElementById('confirmationModal');
     const confirmSendButton = document.getElementById('confirmSendButton');
     const editButton = document.getElementById('editButton');
+    const errorModal = document.getElementById('errorModal');
+    const errorOkButton = document.getElementById('errorOkButton');
 
     // Start Button Click - Show Consent Modal
     startButton.addEventListener('click', () => {
@@ -602,12 +628,36 @@
     messageForm.addEventListener('submit', (e) => {
       e.preventDefault();
       
-      const to = document.getElementById('to').value;
+      const to = document.getElementById('to').value.trim();
+      const lowerCaseInput = to.toLowerCase();
+      
+      // Check for restricted words
+      const containsRestrictedWord = restrictedWords.some(word => 
+        lowerCaseInput.includes(word.toLowerCase())
+      );
+      
+      if (containsRestrictedWord) {
+        errorModal.style.display = 'flex';
+        return;
+      }
+      
+      // Check if input is empty after trimming
+      if (!to) {
+        errorModal.querySelector('h2').textContent = "Empty Message";
+        errorModal.querySelector('p').textContent = "Please enter a name or message.";
+        errorModal.style.display = 'flex';
+        return;
+      }
 
       document.getElementById('confirmRotatedMessage').textContent = to;
       document.getElementById('confirmRotatedOutline').textContent = to;
       
       confirmationModal.style.display = 'flex';
+    });
+
+    // Error OK Button
+    errorOkButton.addEventListener('click', () => {
+      errorModal.style.display = 'none';
     });
 
     // Confirm Send Button - Send to Firebase
