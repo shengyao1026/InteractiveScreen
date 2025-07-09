@@ -375,6 +375,80 @@
       display: inline;
     }
     
+    /* Info Form Styles */
+    .info-form {
+      display: none;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.9);
+      z-index: 1001;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .info-form-content {
+      background-color: white;
+      padding: 5%;
+      border-radius: 2vw;
+      width: 80%;
+      max-width: 600px;
+      text-align: center;
+      font-family: 'Coke', Arial, sans-serif;
+    }
+    
+    .info-form h2 {
+      color: #F40009;
+      font-size: 4vw;
+      margin-bottom: 4%;
+      font-family: 'TCCCUnity', Arial, sans-serif;
+    }
+    
+    .info-form label {
+      display: block;
+      text-align: left;
+      margin: 2% 0 1%;
+      font-size: 2.8vw;
+      color: #333;
+    }
+    
+    .info-form input {
+      width: 100%;
+      padding: 2%;
+      font-size: 3vw;
+      border: 0.2vw solid #ddd;
+      border-radius: 1vw;
+      margin-bottom: 3%;
+      font-family: 'Coke', Arial, sans-serif;
+    }
+    
+    .info-form-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 5%;
+      font-family: 'Coke', Arial, sans-serif;
+    }
+    
+    .info-form-button {
+      padding: 2% 5%;
+      border-radius: 1vw;
+      font-size: 3vw;
+      cursor: pointer;
+      border: none;
+      min-width: 45%;
+    }
+    
+    .info-submit-button {
+      background-color: #F40009;
+      color: white;
+    }
+    
+    .info-cancel-button {
+      background-color: #ddd;
+      color: #333;
+    }
+    
     /* Responsive Adjustments */
     @media (max-width: 768px) {
       h1 {
@@ -427,6 +501,22 @@
       .consent-checkbox label {
         font-size: 3vw;
       }
+      
+      .info-form h2 {
+        font-size: 5vw;
+      }
+      
+      .info-form label {
+        font-size: 3.5vw;
+      }
+      
+      .info-form input {
+        font-size: 4vw;
+      }
+      
+      .info-form-button {
+        font-size: 4vw;
+      }
     }
     
     @media (max-width: 480px) {
@@ -450,6 +540,22 @@
       
       .consent-checkbox label {
         font-size: 4vw;
+      }
+      
+      .info-form h2 {
+        font-size: 6vw;
+      }
+      
+      .info-form label {
+        font-size: 4vw;
+      }
+      
+      .info-form input {
+        font-size: 5vw;
+      }
+      
+      .info-form-button {
+        font-size: 5vw;
       }
     }
 	
@@ -541,6 +647,30 @@
       </div>
     </div>
 
+    <!-- Info Form -->
+    <div id="infoForm" class="info-form">
+      <div class="info-form-content">
+        <h2>Please fill the information</h2>
+        <form id="userInfoForm">
+          <label for="userName">Name:</label>
+          <input type="text" id="userName" name="userName" required>
+          
+          <label for="userContact">Contact Number:</label>
+          <input type="tel" id="userContact" name="userContact" required 
+                 pattern="[0-9]{10,12}" 
+                 title="Please enter a valid phone number (10-12 digits)">
+          
+          <label for="userEmail">Email:</label>
+          <input type="email" id="userEmail" name="userEmail" required>
+          
+          <div class="info-form-buttons">
+            <button type="button" id="infoCancelButton" class="info-form-button info-cancel-button">Cancel</button>
+            <button type="submit" id="infoSubmitButton" class="info-form-button info-submit-button">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <!-- Confirmation Modal -->
     <div id="confirmationModal" class="modal" style="display: none;">
       <div class="modal-content confirmation-content">
@@ -613,11 +743,23 @@
     const consentModal = document.getElementById('consentModal');
     const consentCheckbox = document.getElementById('consentCheckbox');
     const consentButton = document.getElementById('consentButton');
+    const infoForm = document.getElementById('infoForm');
+    const userInfoForm = document.getElementById('userInfoForm');
+    const infoCancelButton = document.getElementById('infoCancelButton');
+    const infoSubmitButton = document.getElementById('infoSubmitButton');
     const confirmationModal = document.getElementById('confirmationModal');
     const confirmSendButton = document.getElementById('confirmSendButton');
     const editButton = document.getElementById('editButton');
     const errorModal = document.getElementById('errorModal');
     const errorOkButton = document.getElementById('errorOkButton');
+
+    // Store user data
+    let userData = {
+      to: '',
+      name: '',
+      contact: '',
+      email: ''
+    };
 
     // Start Button Click - Show Consent Modal
     startButton.addEventListener('click', () => {
@@ -630,9 +772,48 @@
       consentButton.disabled = !consentCheckbox.checked;
     });
 
-    // Consent Button Click - Show Main Content
+    // Consent Button Click - Show Info Form
     consentButton.addEventListener('click', () => {
       consentModal.style.display = 'none';
+      infoForm.style.display = 'flex';
+    });
+
+    // Info Form Cancel Button - Go back to Consent Modal
+    infoCancelButton.addEventListener('click', () => {
+      infoForm.style.display = 'none';
+      consentModal.style.display = 'flex';
+    });
+
+    // Info Form Submit - Show Main Content
+    userInfoForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      // Store user info
+      userData.name = document.getElementById('userName').value.trim();
+      userData.contact = document.getElementById('userContact').value.trim();
+      userData.email = document.getElementById('userEmail').value.trim();
+      
+      // Validate inputs
+      if (!userData.name || !userData.contact || !userData.email) {
+        alert('Please fill in all fields');
+        return;
+      }
+      
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(userData.email)) {
+        alert('Please enter a valid email address');
+        return;
+      }
+      
+      // Validate phone number (10-12 digits)
+      const phoneRegex = /^[0-9]{10,12}$/;
+      if (!phoneRegex.test(userData.contact)) {
+        alert('Please enter a valid phone number (10-12 digits)');
+        return;
+      }
+      
+      infoForm.style.display = 'none';
       mainContent.style.display = 'block';
     });
 
@@ -640,8 +821,8 @@
     messageForm.addEventListener('submit', (e) => {
       e.preventDefault();
       
-      const to = document.getElementById('to').value.trim();
-      const lowerCaseInput = to.toLowerCase();
+      userData.to = document.getElementById('to').value.trim();
+      const lowerCaseInput = userData.to.toLowerCase();
       
       // Check for restricted words
       const containsRestrictedWord = restrictedWords.some(word => 
@@ -654,15 +835,15 @@
       }
       
       // Check if input is empty after trimming
-      if (!to) {
+      if (!userData.to) {
         errorModal.querySelector('h2').textContent = "Empty Message";
         errorModal.querySelector('p').textContent = "Please enter a name or message.";
         errorModal.style.display = 'flex';
         return;
       }
 
-      document.getElementById('confirmRotatedMessage').textContent = to;
-      document.getElementById('confirmRotatedOutline').textContent = to;
+      document.getElementById('confirmRotatedMessage').textContent = userData.to;
+      document.getElementById('confirmRotatedOutline').textContent = userData.to;
       
       confirmationModal.style.display = 'flex';
     });
@@ -674,17 +855,30 @@
 
     // Confirm Send Button - Send to Firebase
     confirmSendButton.addEventListener('click', async () => {
-      const to = document.getElementById('to').value;
-
       try {
         await addDoc(collection(db, "messages"), {
-          to: to,
+          to: userData.to,
+          name: userData.name,
+          contact: userData.contact,
+          email: userData.email,
           timestamp: new Date().toISOString()
         });
         
         confirmationModal.style.display = 'none';
         alert('Message sent successfully!');
         messageForm.reset();
+        
+        // Reset user data
+        userData = {
+          to: '',
+          name: '',
+          contact: '',
+          email: ''
+        };
+        
+        // Go back to home screen
+        mainContent.style.display = 'none';
+        homeScreen.style.display = 'flex';
       } catch (error) {
         console.error("Error sending message: ", error);
         alert('Error sending message. Please try again.');
