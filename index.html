@@ -597,9 +597,9 @@
       <form id="messageForm">
         <input type="text" id="to" name="to" required 
               maxlength="10" 
-              pattern="^[A-Za-z0-9\s]+$" 
-              title="Only English letters, numbers, and spaces (max 12 characters)"
-              placeholder="Maximum 10 character">
+              pattern="^[A-Za-z0-9]+$" 
+              title="Only English letters and numbers (max 10 characters, no spaces)"
+              placeholder="Maximum 10 character, No Space">
         <button type="submit" id="sendButton"></button>
       </form>
     </div>
@@ -715,7 +715,10 @@
       "pkr", "bersatu", "Meleis", "LGBT", "Rogol", "Cacat", "Dadah", "Genocide", "Pelangi", "Perkosa", "Terencat", "Haram", "Isreal", "Jakun", "Kunyit", "Saitan", 
       "Siut", "Memperkosa", "Spastik", "Palestine", "Geng Kunyit", "Syaitan", "Konek", "Diperkosa", "Hamas", "Malay", "Homo", "Iblis", "Zakar", "Memperkosakan", 
       "China", "Kote", "Diperkosakan", "Cina", "Bapuk", "Lancap", "Dirogol", "India", "Sotong", "Kulup", "Merogol", "Melayu", "Sutun", "Puki", "Gay", "Bapok", 
-      "Lembut", "Pepet", "Pantat", "Pungkok", "Buto", "Kuku", "Gugu", "Ass", "Kongkek", "Romen", "Kontol", "Tetek", "Bedebah", "Bontot", "isra hell" , "Israel "
+      "Lembut", "Pepet", "Pantat", "Pungkok", "Buto", "Kuku", "Gugu", "Ass", "Kongkek", "Romen", "Kontol", "Tetek", "Bedebah", "Bontot", "isra hell" , "Israel ",
+      "ahgua", "allah", "bloody", "bloodyhell", "Bo Akai", "boakai", "boycott", "christ", "crap", "damn", "damn it", "darn", "ddly", "diu lei", "diuniama", 
+      "diuniasing", "dllm", "freaking", "god damn", "goddamn", "hamkachan", "hamkafugua", "heck", "hell", "jesus", "lansi", "lcly", "nia seng", "niama", "niaseng", 
+      "pokai", "pokkai", "sinkalan", "sucks", "tamade", "tiuniama", "tiuniasing", "wtf", "wtfwtfwtf", "xinkalan"
     ];
 
     // Firebase configuration and initialization
@@ -752,6 +755,12 @@
     const editButton = document.getElementById('editButton');
     const errorModal = document.getElementById('errorModal');
     const errorOkButton = document.getElementById('errorOkButton');
+
+    document.getElementById('to').addEventListener('keydown', function(e) {
+    if (e.key === ' ') {
+        e.preventDefault();
+      }
+    });
 
     // Store user data
     let userData = {
