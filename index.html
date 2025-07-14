@@ -474,6 +474,7 @@
       input {
         font-size: 4vw;
         padding: 2%;
+        font-family: 'Coke', Arial, sans-serif;
       }
       
       #sendButton {
@@ -504,6 +505,7 @@
       
       .info-form h2 {
         font-size: 5vw;
+        font-family: 'Coke', Arial, sans-serif;
       }
       
       .info-form label {
@@ -516,6 +518,7 @@
       
       .info-form-button {
         font-size: 4vw;
+        font-family: 'Coke', Arial, sans-serif;
       }
     }
     
@@ -705,20 +708,32 @@
   <script type="module">
     // Restricted words list
     const restrictedWords =
-      ["pukimak", "butoh", "lancau", "celaka", "sial", "haram jadah", "jahanam", "pundek", "babi", "anjing", "setan", "kurang ajar", "kepala bapak kau", 
-      "mampus", "berak", "tahi", "kencing", "gampang", "laknat", "burit", "pepek", "lanjiao", "chibai", "kanina", "kanasai", "sohai", "ham sap", "pukisai", 
-      "kpkb", "nabei", "chao", "siao", "gong", "sei", "bodoh", "gila", "bangang", "bahlol", "lembap", "pondan", "pengkid", "bodoh piang", "samdol", "bengap", 
-      "sengal", "tak guna", "hidung belang", "buaya darat", "gemuk", "hodoh", "keling", "apu neh neh", "paria", "cina babi", "cinapek", "pendatang", "kafir", 
-      "murtad", "yahudi", "sekular", "fuck", "shit", "bitch", "bastard", "asshole", "cunt", "motherfucker", "dickhead", "piss", "cock", "rasuah", "songlap", 
-      "penyangak", "pengkhianat", "macai", "walaun", "balaci", "kroni", "kleptokrat", "diktator", "u-turn", "kayangan", "menteri tidor", "kerajaan gagal", 
-      "boneka", "najib", "rosmah", "mahathir", "anwar", "zahid", "muhyiddin", "hadi awang", "lim guan eng", "azmin ali", "ismail sabri", "dap", "umno", "pas", 
-      "pkr", "bersatu", "Meleis", "LGBT", "Rogol", "Cacat", "Dadah", "Genocide", "Pelangi", "Perkosa", "Terencat", "Haram", "Isreal", "Jakun", "Kunyit", "Saitan", 
-      "Siut", "Memperkosa", "Spastik", "Palestine", "Geng Kunyit", "Syaitan", "Konek", "Diperkosa", "Hamas", "Malay", "Homo", "Iblis", "Zakar", "Memperkosakan", 
-      "China", "Kote", "Diperkosakan", "Cina", "Bapuk", "Lancap", "Dirogol", "India", "Sotong", "Kulup", "Merogol", "Melayu", "Sutun", "Puki", "Gay", "Bapok", 
+      ["pukimak", "butoh", "lancau", "celaka", "sial", "haram jadah", "jahanam", "pundek", "babi", "anjing", "setan", "kurang ajar", "kepala bapak kau",
+      "mampus", "berak", "tahi", "kencing", "gampang", "laknat", "burit", "pepek", "lanjiao", "chibai", "kanina", "kanasai", "sohai", "ham sap", "pukisai",
+      "mampus", "berak", "tahi", "kencing", "gampang", "laknat", "burit", "pepek", "lanjiao", "chibai", "kanina", "kanasai", "sohai", "ham sap", "pukisai",
+      "kpkb", "nabei", "chao", "siao", "gong", "sei", "bodoh", "gila", "bangang", "bahlol", "lembap", "pondan", "pengkid", "bodohpiang", "samdol", "bengap",
+      "kpkb", "nabei", "chao", "siao", "gong", "sei", "bodoh", "gila", "bangang", "bahlol", "lembap", "pondan", "pengkid", "bodoh piang", "samdol", "bengap",
+      "sengal", "tak guna", "hidungbelang", "buayadarat", "gemuk", "hodoh", "keling", "apunehneh", "paria", "cinababi", "cinapek", "pendatang", "kafir",
+      "sengal", "tak guna", "hidung belang", "buaya darat", "gemuk", "hodoh", "keling", "apu neh neh", "paria", "cina babi", "cinapek", "pendatang", "kafir",
+      "murtad", "yahudi", "sekular", "fuck", "shit", "bitch", "bastard", "asshole", "cunt", "motherfucker", "dickhead", "piss", "cock", "rasuah", "songlap",
+      "murtad", "yahudi", "sekular", "fuck", "shit", "bitch", "bastard", "asshole", "cunt", "motherfucker", "dickhead", "piss", "cock", "rasuah", "songlap",
+      "penyangak", "pengkhiana", "macai", "walaun", "balaci", "kroni", "kleptokrat", "diktator", "uturn", "kayangan", "menteritidor", "kerajaanga",
+      "penyangak", "pengkhianat", "macai", "walaun", "balaci", "kroni", "kleptokrat", "diktator", "u-turn", "kayangan", "menteri tidor", "kerajaan gagal",
+      "boneka", "najib", "rosmah", "mahathir", "anwar", "zahid", "muhyiddin", "hadiawang", "limguaneng", "azminali", "ismailsabri", "dap", "umno", "pas",
+      "boneka", "najib", "rosmah", "mahathir", "anwar", "zahid", "muhyiddin", "hadi awang", "lim guan eng", "azmin ali", "ismail sabri", "dap", "umno", "pas",
+      "pkr", "bersatu", "Meleis", "LGBT", "Rogol", "Cacat", "Dadah", "Genocide", "Pelangi", "Perkosa", "Terencat", "Haram", "Isreal", "Jakun", "Kunyit", "Saitan",
+      "pkr", "bersatu", "Meleis", "LGBT", "Rogol", "Cacat", "Dadah", "Genocide", "Pelangi", "Perkosa", "Terencat", "Haram", "Isreal", "Jakun", "Kunyit", "Saitan",
+      "Siut", "Memperkosa", "Spastik", "Palestine", "Geng Kunyit", "Syaitan", "Konek", "Diperkosa", "Hamas", "Malay", "Homo", "Iblis", "Zakar", "Memperkosakan",
+      "Siut", "Memperkosa", "Spastik", "Palestine", "Geng Kunyit", "Syaitan", "Konek", "Diperkosa", "Hamas", "Malay", "Homo", "Iblis", "Zakar", "Memperkosakan",
+      "China", "Kote", "Diperkosakan", "Cina", "Bapuk", "Lancap", "Dirogol", "India", "Sotong", "Kulup", "Merogol", "Melayu", "Sutun", "Puki", "Gay", "Bapok",
+      "China", "Kote", "Diperkosakan", "Cina", "Bapuk", "Lancap", "Dirogol", "India", "Sotong", "Kulup", "Merogol", "Melayu", "Sutun", "Puki", "Gay", "Bapok",
       "Lembut", "Pepet", "Pantat", "Pungkok", "Buto", "Kuku", "Gugu", "Ass", "Kongkek", "Romen", "Kontol", "Tetek", "Bedebah", "Bontot", "isra hell" , "Israel ",
-      "ahgua", "allah", "bloody", "bloodyhell", "Bo Akai", "boakai", "boycott", "christ", "crap", "damn", "damn it", "darn", "ddly", "diu lei", "diuniama", 
-      "diuniasing", "dllm", "freaking", "god damn", "goddamn", "hamkachan", "hamkafugua", "heck", "hell", "jesus", "lansi", "lcly", "nia seng", "niama", "niaseng", 
-      "pokai", "pokkai", "sinkalan", "sucks", "tamade", "tiuniama", "tiuniasing", "wtf", "wtfwtfwtf", "xinkalan"
+      "Lembut", "Pepet", "Pantat", "Pungkok", "Buto", "Kuku", "Gugu", "Ass", "Kongkek", "Romen", "Kontol", "Tetek", "Bedebah", "Bontot", "isra hell" , "Israel ",
+      "ahgua", "allah", "bloody", "bloodyhell", "Bo Akai", "boakai", "boycott", "christ", "crap", "damn", "damn it", "darn", "ddly", "diu lei", "diuniama",
+      "ahgua", "allah", "bloody", "bloodyhell", "Bo Akai", "boakai", "boycott", "christ", "crap", "damn", "damn it", "darn", "ddly", "diu lei", "diuniama",
+      "diuniasing", "dllm", "freaking", "god damn", "goddamn", "hamkachan", "hamkafugua", "heck", "hell", "jesus", "lansi", "lcly", "niama", "niaseng",
+      "diuniasing", "dllm", "freaking", "god damn", "goddamn", "hamkachan", "hamkafugua", "heck", "hell", "jesus", "lansi", "lcly", "nia seng", "niama", "niaseng",
+      "pokai", "pokkai", "sinkalan", "sucks", "tamade", "tiuniama", "tiuniasing", "wtf", "wtfwtfwtf", "xinkalan", "Nigga", "vanakkam", "putangina"
     ];
 
     // Firebase configuration and initialization
